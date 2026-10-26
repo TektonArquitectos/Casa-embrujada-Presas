@@ -162,16 +162,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
   <section class="card locked" id="paso3" aria-disabled="true">
     <h2><small>Paso 3 de 3 · obligatorio</small>Únete al grupo de WhatsApp</h2>
     <div class="alert">Si no haces este paso, no quedas registrado en el sorteo.</div>
-    <p>Tu boleto ya quedó guardado. Se abre WhatsApp con un mensaje listo: solo toca <b>Enviar</b> y te agregamos al <b>grupo</b>, donde mandamos el link del <b>sorteo en vivo por Google Meet</b>.</p>
-    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Abrir WhatsApp y enviar mi registro</a>
-    <a class="btn ghost" id="grupo" href="#" target="_blank" rel="noopener" hidden>Entrar al grupo de WhatsApp</a>
-    <p class="muted">WhatsApp de Papelería Eupalinos: <b>773 680 1410</b></p>
+    <p>Tu boleto ya quedó guardado. Toca el botón, entra al <b>grupo de WhatsApp</b> y listo: ahí mandamos el link del <b>sorteo en vivo por Google Meet</b>.</p>
+    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Entrar al grupo de WhatsApp</a>
+    <p class="muted">¿Dudas? WhatsApp de Papelería Eupalinos: <b>773 680 1410</b></p>
   </section>
 
   <section class="done-card" id="done" hidden aria-live="polite">
-    <h2>¡Ya casi!</h2>
-    <p>En cuanto veamos tu mensaje te agregamos al grupo y tu boleto queda registrado.</p>
-    <p class="muted" style="color:inherit">Si no te contestamos en 24 horas, vuelve a escribir al 773 680 1410.</p>
+    <h2>¡Listo!</h2>
+    <p>Quédate en el grupo: ahí llega el link del sorteo en vivo del 2 de noviembre a las 5:00 pm.</p>
+    <p class="muted" style="color:inherit">Si no pudiste entrar al grupo, escríbenos al 773 680 1410.</p>
   </section>
 
   <section class="event">
@@ -208,9 +207,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 </main>
 
 <script>
-// Link de invitación del grupo de WhatsApp (https://chat.whatsapp.com/...). Vacío = solo se muestra el chat de Eupalinos.
-const WA_GRUPO="";
-const WA_NUMERO="527736801410";
+// Link de invitación del grupo de WhatsApp (paso 3).
+const WA_GRUPO="https://chat.whatsapp.com/EUqE92Ywca77TWtcuhX9Kx";
 const BRANDS=[
   {id:"tekton",name:"Tekton Arquitectos",logo:"T",cls:"l-tekton",
     instagram:{handle:"@tektonarquitectos",url:"https://www.instagram.com/tektonarquitectos/"},
@@ -309,10 +307,7 @@ function render(){
       <div class="row"><span class="logo ${b.cls}" aria-hidden="true">${b.logo}</span>
       <span class="txt"><span class="brand">${b.name}</span><br><span class="what">${acc.handle}</span></span>
       ${e==="sigue"?`<span class="cta">✓ Listo</span>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">${e==="abierto"?"Abrir":"Seguir"}</a>`}</div>${ask}</div>`}).join("");
-  const plat=S.platform==="instagram"?"Instagram":"Facebook";
-  const msg=`Hola, quiero participar en el sorteo de la Alexa de la Casa Embrujada y unirme al grupo.\nNombre: ${S.nombre}\n${plat}: ${S.usuario}\nYa sigo a Tekton, Bacru y Eupalinos.`;
-  $("wa").href="https://wa.me/"+WA_NUMERO+"?text="+encodeURIComponent(msg);
-  $("grupo").href=WA_GRUPO||"#";$("grupo").hidden=!WA_GRUPO;
+  $("wa").href=WA_GRUPO;
   $("done").hidden=!S.whatsapp;
 }
 
@@ -349,7 +344,7 @@ document.addEventListener("click",e=>{
     return;
   }
   if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600)}
-  if(e.target.closest("#grupo,#como-llegar"))confeti(1,e.target.closest("a"));
+  if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
 });
 // Si intentan registrarse sin darle play, se sacude el video y los regresamos a él.
 $("paso1").addEventListener("click",()=>{
