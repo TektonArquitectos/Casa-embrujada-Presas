@@ -80,6 +80,32 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .event a{color:var(--bone)}
 .points{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:baseline;font-size:.95rem}
 .points > b{font-family:var(--f-display);font-weight:400;color:var(--pumpkin);font-size:1.2rem}
+.video{position:relative;border-radius:20px;overflow:hidden;background:#000;border:3px solid var(--pumpkin);box-shadow:0 0 0 0 rgba(255,122,26,.6);animation:latido 1.8s ease-out infinite}
+.video.visto{border-color:var(--ok);animation:none}
+.video video{display:block;width:100%;aspect-ratio:16/9;background:#000;object-fit:cover}
+.video .play{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;border:0;padding:16px;cursor:pointer;color:var(--bone);text-align:center;
+  background:linear-gradient(180deg,rgba(43,23,71,.15),rgba(43,23,71,.75));font:900 1.05rem var(--f-body)}
+.video .play .boton{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:var(--pumpkin);color:#2a1300;box-shadow:0 6px 0 rgba(0,0,0,.35);animation:rebote 1.1s ease-in-out infinite}
+.video .play .boton svg{width:34px;height:34px;margin-left:5px}
+.video .play .txt{max-width:22ch;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+.video .play .txt b{color:var(--pumpkin-2)}
+.video-nota{margin:0;text-align:center;font-weight:800;font-size:.92rem;color:var(--pumpkin-2)}
+.video-nota.ok{color:var(--ok)}
+.candado{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.3);font-weight:800;font-size:.95rem}
+.candado .ico{font-size:1.4rem}
+.temblor{animation:temblor .45s ease-in-out}
+@keyframes latido{0%{box-shadow:0 0 0 0 rgba(255,122,26,.55)}70%{box-shadow:0 0 0 14px rgba(255,122,26,0)}100%{box-shadow:0 0 0 0 rgba(255,122,26,0)}}
+@keyframes rebote{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes temblor{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.mapa{display:grid;gap:10px;padding:16px;border-radius:18px;background:rgba(0,0,0,.22)}
+.mapa h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;color:var(--pumpkin-2)}
+.mapa iframe{width:100%;aspect-ratio:4/3;border:0;border-radius:14px;background:var(--night-2)}
+.fotos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fotos figure{margin:0;display:grid;gap:4px}
+.fotos img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;display:block}
+.fotos figcaption{font-size:.78rem;color:var(--mist);text-align:center}
+#confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion:reduce){.video,.video .play .boton,.temblor{animation:none}}
 footer{font-size:.75rem;color:var(--mist);text-align:center;display:grid;gap:6px;opacity:.9}
 footer a{color:var(--mist)}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--pumpkin-2);outline-offset:3px}
@@ -91,11 +117,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
   <div class="eyebrow">Casa Embrujada · Presas, Tezontepec</div>
   <h1>¡Gana una <em>Amazon Alexa</em>!</h1>
   <p class="lead">Completa los <b>3 pasos</b> para quedar en el sorteo en vivo del <b>2 de noviembre, 5:00 pm</b>.</p>
+  <!-- Video: hay que darle play para desbloquear el registro (no hace falta verlo completo) -->
+  <div class="video" id="video-box">
+    <video id="video" src="/video/casa-embrujada.mp4" poster="/video/poster.jpg" playsinline preload="metadata"></video>
+    <button type="button" class="play" id="play" aria-label="Reproducir el video para desbloquear el registro">
+      <span class="boton"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg></span>
+      <span class="txt">Dale <b>play</b> al video para <b>desbloquear</b> tu registro</span>
+    </button>
+  </div>
+  <p class="video-nota" id="video-nota">👆 Primero dale play al video. No tienes que verlo completo.</p>
+
   <div class="stepper" aria-hidden="true"><span id="s1"></span><span id="s2"></span><span id="s3"></span></div>
 
   <!-- Paso 1 -->
   <section class="card" id="paso1">
     <h2><small>Paso 1 de 3</small>Tus datos</h2>
+    <p class="candado" id="candado"><span class="ico" aria-hidden="true">🔒</span><span>Dale play al video de arriba para desbloquear el registro.</span></p>
     <label for="nombre">Nombre de mamá, papá o adulto responsable
       <input type="text" id="nombre" autocomplete="name" maxlength="80" placeholder="Ej. Sofía Hernández"></label>
     <label for="telefono">Tu WhatsApp (10 dígitos)
@@ -145,10 +182,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
     </div>
     <ul>
       <li><b>30 y 31 de octubre y 1 de noviembre</b>, de 6:00 a 9:00 pm</li>
-      <li>Av. Juárez, Presas, Tezontepec de Aldama, al lado de Affinet · <a href="https://www.google.com/maps/search/?api=1&query=20.1625864%2C-99.2608781" target="_blank" rel="noopener">Ver ubicación en el mapa</a></li>
+      <li>Av. Juárez, Presas, Tezontepec de Aldama, al lado de Affinet · <a href="#ubicacion">Ver cómo llegar</a></li>
       <li>Dulces y palomitas gratis para los niños 🎃</li>
       <li><b>Sorteo en vivo por Google Meet: 2 de noviembre, 5:00 pm</b>, con ganador y 3 suplentes. El link llega por el grupo de WhatsApp.</li>
     </ul>
+  </section>
+
+  <section class="mapa" id="ubicacion">
+    <h3>¿Cómo llegar a la Casa Embrujada?</h3>
+    <p class="muted">Av. Juárez, Presas, Tezontepec de Aldama, al lado de Affinet (la casa azul).</p>
+    <iframe title="Mapa de la Casa Embrujada en Presas" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+      src="https://maps.google.com/maps?q=20.162610,-99.260736&z=17&hl=es&output=embed"></iframe>
+    <a class="btn" href="https://maps.app.goo.gl/YA1D4D8qnYke9V8o7" target="_blank" rel="noopener" id="como-llegar">Abrir en Google Maps</a>
+    <div class="fotos">
+      <figure><img src="/img/casa-noche.webp" alt="La Casa Embrujada de noche, decorada con calabazas y esqueletos" loading="lazy"><figcaption>Así se ve de noche</figcaption></figure>
+      <figure><img src="/img/casa-dia.webp" alt="La casa azul de día, junto al local de Affinet" loading="lazy"><figcaption>Así se ve de día</figcaption></figure>
+    </div>
   </section>
 
   <footer>
@@ -184,10 +233,45 @@ const S={
     :saved.platform||(/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?"facebook":"instagram"),
   nombre:saved.nombre||"",telefono:saved.telefono||"",usuario:saved.usuario||"",datosOk:!!saved.datosOk&&!!saved.telefono,
   // estado por plataforma y marca: "" | "abierto" | "sigue"
-  st:saved.st||{instagram:{},facebook:{}},whatsapp:!!saved.whatsapp
+  st:saved.st||{instagram:{},facebook:{}},whatsapp:!!saved.whatsapp,
+  // true en cuanto le dan play al video; desbloquea el paso 1
+  video:!!saved.video
 };
 let pendiente=null; // {id, t}
-const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,usuario:S.usuario,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp});
+const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,usuario:S.usuario,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
+
+// Confeti en canvas, sin librerías. fuerza: 1 = acción normal, 2 = logro grande.
+const confeti=(()=>{
+  const COLORES=["#ff7a1a","#ffa24d","#fff8ee","#3ddc84","#a374ff","#ffd23f"];
+  const quieto=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cv,ctx,piezas=[],corriendo=false;
+  function cuadro(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    piezas=piezas.filter(p=>p.y<cv.height+40&&p.vida>0);
+    for(const p of piezas){
+      p.vx*=.985;p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vida--;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;
+      if(p.redondo){ctx.beginPath();ctx.arc(0,0,p.t/2,0,Math.PI*2);ctx.fill()}else ctx.fillRect(-p.t/2,-p.t/4,p.t,p.t/2);
+      ctx.restore();
+    }
+    if(piezas.length)requestAnimationFrame(cuadro);else{corriendo=false;ctx.clearRect(0,0,cv.width,cv.height)}
+  }
+  return function(fuerza=1,origen){
+    if(quieto)return;
+    if(!cv){cv=document.createElement("canvas");cv.id="confeti";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);ctx=cv.getContext("2d")}
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
+    let ox=innerWidth/2,oy=innerHeight*.35;
+    if(origen&&origen.getBoundingClientRect){const r=origen.getBoundingClientRect();ox=r.left+r.width/2;oy=Math.min(Math.max(r.top+r.height/2,40),innerHeight-40)}
+    const n=fuerza>1?160:70;
+    for(let i=0;i<n;i++){
+      const ang=-Math.PI/2+(Math.random()-.5)*(fuerza>1?2.4:1.6),vel=(fuerza>1?11:8)+Math.random()*7;
+      piezas.push({x:ox*dpr,y:oy*dpr,vx:Math.cos(ang)*vel*dpr,vy:Math.sin(ang)*vel*dpr,rot:Math.random()*6,vr:(Math.random()-.5)*.4,
+        t:(6+Math.random()*7)*dpr,color:COLORES[i%COLORES.length],redondo:Math.random()<.3,vida:160+Math.random()*60});
+    }
+    if(!corriendo){corriendo=true;requestAnimationFrame(cuadro)}
+  };
+})();
 // Guarda el registro en la base de datos del staff. Si falla, el registro por WhatsApp sigue funcionando.
 function registrar(siguio){
   if(!S.telefono)return;
@@ -204,7 +288,14 @@ function render(){
   $("usuario-lbl").textContent=S.platform==="instagram"?"Tu usuario de Instagram":"Tu nombre como aparece en Facebook";
   $("usuario").placeholder=S.platform==="instagram"?"@tu_usuario":"Nombre en Facebook";
   const n=seguidas(),p2=S.datosOk,p3=p2&&n===3;
-  $("paso1").className="card "+(p2?"complete":"active");
+  $("paso1").className="card "+(!S.video?"locked":p2?"complete":"active");
+  $("candado").hidden=S.video;
+  $("paso1").setAttribute("aria-disabled",String(!S.video));
+  ["nombre","telefono","usuario","continuar"].forEach(id=>$(id).disabled=!S.video);
+  document.querySelectorAll(".platform button").forEach(b=>b.disabled=!S.video);
+  $("video-box").classList.toggle("visto",S.video);
+  $("video-nota").textContent=S.video?"✓ ¡Listo! Ya puedes registrarte abajo.":"👆 Primero dale play al video. No tienes que verlo completo.";
+  $("video-nota").classList.toggle("ok",S.video);
   $("paso2").className="card "+(!p2?"locked":n===3?"complete":"active");
   $("paso3").className="card "+(!p3?"locked":S.whatsapp?"complete":"active");
   $("paso2").setAttribute("aria-disabled",String(!p2));$("paso3").setAttribute("aria-disabled",String(!p3));
@@ -236,6 +327,7 @@ $("continuar").addEventListener("click",()=>{
   if(usuario.length<2){$("usuario").focus();$("usuario").setAttribute("aria-invalid","true");return}
   S.nombre=nombre;S.telefono=telefono;S.usuario=usuario;S.datosOk=true;save();render();
   registrar(seguidas()===3);
+  confeti(1,$("continuar"));
   $("paso2").scrollIntoView({behavior:"smooth",block:"start"});
 });
 document.addEventListener("click",e=>{
@@ -250,13 +342,32 @@ document.addEventListener("click",e=>{
     return;
   }
   const yes=e.target.closest("[data-yes]");
-  if(yes){const id=yes.dataset.yes;S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
+  if(yes){const id=yes.dataset.yes,fila=yes.closest(".follow");S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
     track("SigueMarca",{marca:id,plataforma:S.platform});
-    if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
+    if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
+    else confeti(1,fila);
     return;
   }
-  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");setTimeout(render,600)}
+  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600)}
+  if(e.target.closest("#grupo,#como-llegar"))confeti(1,e.target.closest("a"));
 });
+// Si intentan registrarse sin darle play, se sacude el video y los regresamos a él.
+$("paso1").addEventListener("click",()=>{
+  if(S.video)return;
+  const box=$("video-box");box.scrollIntoView({behavior:"smooth",block:"center"});
+  box.classList.remove("temblor");void box.offsetWidth;box.classList.add("temblor");
+});
+// Desbloqueo: basta con darle play (no hace falta verlo completo).
+const video=$("video");
+function desbloquear(){
+  $("play").hidden=true;video.controls=true;
+  if(S.video)return;
+  S.video=true;save();render();track("PlayVideo");
+  confeti(1,$("video-box"));
+  setTimeout(()=>$("paso1").scrollIntoView({behavior:"smooth",block:"start"}),1800);
+}
+$("play").addEventListener("click",()=>{const p=video.play();if(p&&p.catch)p.catch(()=>desbloquear())});
+video.addEventListener("play",desbloquear);
 function marcarAbierto(id){if(estado(id)==="sigue")return;S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"abierto"};pendiente=null;save();render()}
 let ocultoDesde=0;
 document.addEventListener("visibilitychange",()=>{
