@@ -42,7 +42,7 @@ h1 em{font-style:normal;color:var(--pumpkin)}
 .card p{margin:0}
 .muted{color:var(--mist);font-size:.92rem}
 label{display:grid;gap:4px;font-weight:800;font-size:.9rem}
-input[type=text]{width:100%;font:600 1rem var(--f-body);color:var(--night);background:var(--bone);border:0;border-radius:12px;padding:12px 14px}
+input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:var(--night);background:var(--bone);border:0;border-radius:12px;padding:12px 14px}
 .platform{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:rgba(0,0,0,.25);border-radius:999px}
 .platform button{border:0;border-radius:999px;padding:10px 8px;font:800 .95rem var(--f-body);color:var(--mist);background:transparent;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center}
 .platform button[aria-pressed="true"]{background:var(--bone);color:var(--night)}
@@ -98,6 +98,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
     <h2><small>Paso 1 de 3</small>Tus datos</h2>
     <label for="nombre">Nombre de mamá, papá o adulto responsable
       <input type="text" id="nombre" autocomplete="name" maxlength="80" placeholder="Ej. Sofía Hernández"></label>
+    <label for="telefono">Tu WhatsApp (10 dígitos)
+      <input type="tel" id="telefono" autocomplete="tel-national" inputmode="numeric" maxlength="14" placeholder="773 123 4567"></label>
     <div class="platform" role="group" aria-label="¿Dónde nos vas a seguir?">
       <button type="button" data-p="instagram" aria-pressed="true">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg>
@@ -123,7 +125,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
   <section class="card locked" id="paso3" aria-disabled="true">
     <h2><small>Paso 3 de 3 · obligatorio</small>Únete al grupo de WhatsApp</h2>
     <div class="alert">Si no haces este paso, no quedas registrado en el sorteo.</div>
-    <p>Se abre WhatsApp con tu registro ya escrito: solo toca <b>Enviar</b>. Así queda tu boleto y te agregamos al <b>grupo</b>, donde mandamos el link del <b>sorteo en vivo por Google Meet</b>.</p>
+    <p>Tu boleto ya quedó guardado. Se abre WhatsApp con un mensaje listo: solo toca <b>Enviar</b> y te agregamos al <b>grupo</b>, donde mandamos el link del <b>sorteo en vivo por Google Meet</b>.</p>
     <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Abrir WhatsApp y enviar mi registro</a>
     <a class="btn ghost" id="grupo" href="#" target="_blank" rel="noopener" hidden>Entrar al grupo de WhatsApp</a>
     <p class="muted">WhatsApp de Papelería Eupalinos: <b>773 680 1410</b></p>
@@ -180,12 +182,18 @@ const saved=store.get("ce_v2")||{};
 const S={
   platform:qp==="fb"||qp==="facebook"?"facebook":qp==="ig"||qp==="instagram"?"instagram"
     :saved.platform||(/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?"facebook":"instagram"),
-  nombre:saved.nombre||"",usuario:saved.usuario||"",datosOk:!!saved.datosOk,
+  nombre:saved.nombre||"",telefono:saved.telefono||"",usuario:saved.usuario||"",datosOk:!!saved.datosOk&&!!saved.telefono,
   // estado por plataforma y marca: "" | "abierto" | "sigue"
   st:saved.st||{instagram:{},facebook:{}},whatsapp:!!saved.whatsapp
 };
 let pendiente=null; // {id, t}
-const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,usuario:S.usuario,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp});
+const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,usuario:S.usuario,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp});
+// Guarda el registro en la base de datos del staff. Si falla, el registro por WhatsApp sigue funcionando.
+function registrar(siguio){
+  if(!S.telefono)return;
+  fetch("/api/registro",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,
+    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,usuario:S.usuario,siguio})}).catch(()=>{});
+}
 const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
 const estado=id=>(S.st[S.platform]||{})[id]||"";
@@ -221,11 +229,13 @@ document.querySelector(".platform").addEventListener("click",e=>{
   const b=e.target.closest("button[data-p]");if(!b)return;S.platform=b.dataset.p;save();render();
 });
 $("continuar").addEventListener("click",()=>{
-  const nombre=$("nombre").value.trim(),usuario=$("usuario").value.trim();
+  const nombre=$("nombre").value.trim(),usuario=$("usuario").value.trim(),telefono=$("telefono").value.replace(/\D/g,"").slice(-10);
+  ["nombre","telefono","usuario"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   if(nombre.length<3){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
+  if(telefono.length!==10){$("telefono").focus();$("telefono").setAttribute("aria-invalid","true");return}
   if(usuario.length<2){$("usuario").focus();$("usuario").setAttribute("aria-invalid","true");return}
-  $("nombre").removeAttribute("aria-invalid");$("usuario").removeAttribute("aria-invalid");
-  S.nombre=nombre;S.usuario=usuario;S.datosOk=true;save();render();
+  S.nombre=nombre;S.telefono=telefono;S.usuario=usuario;S.datosOk=true;save();render();
+  registrar(seguidas()===3);
   $("paso2").scrollIntoView({behavior:"smooth",block:"start"});
 });
 document.addEventListener("click",e=>{
@@ -242,7 +252,7 @@ document.addEventListener("click",e=>{
   const yes=e.target.closest("[data-yes]");
   if(yes){const id=yes.dataset.yes;S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
     track("SigueMarca",{marca:id,plataforma:S.platform});
-    if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
+    if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
     return;
   }
   if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");setTimeout(render,600)}
@@ -253,7 +263,7 @@ document.addEventListener("visibilitychange",()=>{
   if(document.hidden){ocultoDesde=Date.now();return}
   if(pendiente&&Date.now()-ocultoDesde>=MIN_FUERA_MS)marcarAbierto(pendiente.id);
 });
-$("nombre").value=S.nombre;$("usuario").value=S.usuario;
+$("nombre").value=S.nombre;$("telefono").value=S.telefono;$("usuario").value=S.usuario;
 render();
 </script>
 </body>

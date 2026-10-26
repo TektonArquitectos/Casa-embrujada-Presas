@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<script>
+// Conecta el panel de puntos (escrito para claude.ai) con la API de este sitio.
+// Ofrece el mismo window.claude.use("db" | "user" | "downloads") que espera el panel.
+(function () {
+  let pin = null;
+  try { pin = localStorage.getItem("ce_pin"); } catch (e) {}
+  let pinListo;
+  const pinReady = new Promise((r) => (pinListo = r));
+  const INTERVALO_MS = 8000;
+
+  async function api(method, q, body) {
+    const r = await fetch("/api/db" + (q || ""), {
+      method,
+      headers: { "Content-Type": "application/json", "x-pin": pin || "" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (r.status === 401) {
+      try { localStorage.removeItem("ce_pin"); } catch (e) {}
+      location.reload();
+      throw { code: "unauthorized", message: "PIN incorrecto" };
+    }
+    if (r.status === 413) throw { code: "quota_exceeded", message: "Documento demasiado grande" };
+    if (!r.ok) throw { code: "unavailable", message: "HTTP " + r.status };
+    return r.json();
+  }
+
+  const snap = (id, data) => ({
+    id,
+    exists: data != null,
+    data: () => (data == null ? undefined : data),
+    metadata: { fromCache: false, hasPendingWrites: false },
+  });
+
+  // Consulta cada pocos segundos y solo avisa al panel cuando algo cambió,
+  // para no borrar lo que el staff está escribiendo.
+  function poll(leer, next) {
+    let parar = false, ultimo = null;
+    (async function tick() {
+      if (parar) return;
+      try {
+        const { valor, firma } = await leer();
+        if (firma !== ultimo) { ultimo = firma; next(valor); }
+      } catch (e) {}
+      if (!parar) setTimeout(tick, INTERVALO_MS);
+    })();
+    return () => { parar = true; };
+  }
+
+  function docRef(path) {
+    const id = path.split("/").pop();
+    const leer = async () => {
+      const r = await api("GET", "?doc=" + encodeURIComponent(path));
+      return { valor: snap(id, r.exists ? r.data : null), firma: JSON.stringify(r) };
+    };
+    return {
+      id, path,
+      get: async () => (await leer()).valor,
+      set: (d) => api("POST", "", { op: "set", path, data: d }).then(() => {}),
+      update: (d) => api("POST", "", { op: "update", path, data: d }).then(() => {}),
+      delete: () => api("POST", "", { op: "delete", path }).then(() => {}),
+      onSnapshot: (next) => poll(leer, next),
+    };
+  }
+
+  function colRef(path) {
+    return {
+      path,
+      doc: (id) => docRef(path + "/" + id),
+      onSnapshot: (next) => poll(async () => {
+        const r = await api("GET", "?col=" + encodeURIComponent(path));
+        const docs = r.docs.map((d) => snap(d.id, d.data));
+        return {
+          valor: { docs, size: docs.length, empty: !docs.length, metadata: { fromCache: false, hasPendingWrites: false }, docChanges: () => [] },
+          firma: JSON.stringify(r),
+        };
+      }, next),
+    };
+  }
+
+  const db = { doc: docRef, collection: colRef };
+  const user = { can: async () => true, canEdit: async () => true, isOwner: async () => false };
+  const downloads = {
+    save: async ({ filename, data }) => {
+      const blob = data instanceof Blob ? data : new Blob([data], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      return { status: "saved" };
+    },
+  };
+  window.claude = {
+    use: async (name) => {
+      await pinReady;
+      return name === "db" ? db : name === "user" ? user : name === "downloads" ? downloads : null;
+    },
+  };
+
+  async function probar(p) {
+    const r = await fetch("/api/db?doc=config/puntos", { headers: { "x-pin": p } });
+    return r.status;
+  }
+
+  function pedirPin() {
+    const w = document.createElement("div");
+    w.className = "pin-gate";
+    w.innerHTML = `<form><h2>Panel del staff</h2><p class="small muted">Casa Embrujada · Presas. Escribe el PIN del staff para entrar.</p>
+      <label class="field" for="pin-input">PIN<input type="password" id="pin-input" inputmode="numeric" autocomplete="current-password" required></label>
+      <button type="submit" class="btn">Entrar</button><p class="pin-msg" role="alert"></p></form>`;
+    document.body.appendChild(w);
+    const msg = w.querySelector(".pin-msg");
+    w.querySelector("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const p = w.querySelector("#pin-input").value.trim();
+      msg.textContent = "Revisando…";
+      const st = await probar(p).catch(() => 0);
+      if (st === 200) {
+        pin = p;
+        try { localStorage.setItem("ce_pin", p); } catch (_) {}
+        w.remove();
+        pinListo();
+      } else {
+        msg.textContent = st === 401 ? "PIN incorrecto." : st === 500 ? "La base de datos todavía no está configurada." : "No se pudo conectar. Revisa tu internet e intenta de nuevo.";
+      }
+    });
+    w.querySelector("#pin-input").focus();
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (pin) {
+      const st = await probar(pin).catch(() => 0);
+      if (st === 200) { pinListo(); return; }
+    }
+    pedirPin();
+  });
+})();
+</script>
+<style>
+.pin-gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.pin-gate form{display:grid;gap:12px;width:100%;max-width:340px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.pin-gate h2{margin:0}
+.pin-gate input{width:100%;font:1rem var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pin-msg{color:var(--bad);margin:0;min-height:1.2em;font-size:.9rem}
+</style>
+</head>
+<body>

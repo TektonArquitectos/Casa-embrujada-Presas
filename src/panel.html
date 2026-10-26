@@ -1,0 +1,563 @@
+<title>Puntos Casa Embrujada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: herramienta de mostrador para el celular del staff; barra fija con totales, pestañas, una columna que se abre a dos en escritorio. */
+:root{
+  --bg:#f5f2fa; --surface:#ffffff; --ink:#221a33; --muted:#665c7a; --line:#e2daee;
+  --accent:#d9660a; --accent-soft:#fdebdc; --accent-ink:#ffffff;
+  --plum:#4a2a7a; --plum-soft:#ece4f8; --good:#1d7f47; --good-soft:#e1f3e8; --bad:#b73326; --bad-soft:#fbe5e2;
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#16111e; --surface:#211a2d; --ink:#f1ecf8; --muted:#a99dbe; --line:#342a45;
+  --accent:#ff8a2a; --accent-soft:#3a2414; --accent-ink:#1b1105;
+  --plum:#c6a6ff; --plum-soft:#2c2242; --good:#56c98a; --good-soft:#15301f; --bad:#ff7b6b; --bad-soft:#3a1915;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16111e; --surface:#211a2d; --ink:#f1ecf8; --muted:#a99dbe; --line:#342a45;
+  --accent:#ff8a2a; --accent-soft:#3a2414; --accent-ink:#1b1105;
+  --plum:#c6a6ff; --plum-soft:#2c2242; --good:#56c98a; --good-soft:#15301f; --bad:#ff7b6b; --bad-soft:#3a1915;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .wrap{padding-block:12px 0;display:grid;gap:10px}
+.brandline{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-weight:800;font-size:1.35rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.when{font-size:.82rem;color:var(--muted)}
+.stats{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.stat{flex:0 0 auto;display:flex;align-items:baseline;gap:6px;padding:6px 10px;border-radius:999px;background:var(--plum-soft);font-size:.82rem;color:var(--muted);white-space:nowrap}
+.stat b{font-family:var(--f-display);font-size:1rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat.goal b{color:var(--plum)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs button{flex:0 0 auto;border:0;background:none;color:var(--muted);font:700 .92rem var(--f-body);padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+main .wrap{padding-block:18px 96px;display:grid;gap:16px}
+.banner{padding:12px 14px;border-radius:var(--r);background:var(--accent-soft);color:var(--ink);font-size:.92rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;min-width:0}
+h2{font-family:var(--f-display);font-weight:800;font-size:1.15rem;margin:0}
+h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+label.field{display:grid;gap:4px;font-size:.88rem;font-weight:700;min-width:0}
+input[type=text],input[type=tel],input[type=number],select{width:100%;font:1rem var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.row > *{flex:1 1 160px}
+.btn{border:0;border-radius:10px;padding:11px 16px;font:700 .95rem var(--f-body);cursor:pointer;background:var(--accent);color:var(--accent-ink);flex:0 0 auto}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.plum{background:var(--plum);color:var(--surface)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-size:.92rem}
+.seg input{accent-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.9rem}
+.check input{margin-top:3px;accent-color:var(--accent);width:18px;height:18px}
+.person-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.person-head .who{min-width:0}
+.person-head .name{font-family:var(--f-display);font-weight:800;font-size:1.3rem;overflow-wrap:anywhere}
+.score{display:grid;justify-items:end}
+.score b{font-family:var(--f-display);font-size:2.4rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.score span{font-size:.78rem;color:var(--muted)}
+.toggles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer;font:700 .95rem var(--f-body);color:var(--ink);text-align:left}
+.tog small{font-weight:400;color:var(--muted)}
+.tog[aria-pressed="true"]{background:var(--good-soft);border-color:var(--good)}
+.tog .mark{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:grid;place-items:center;font-size:.8rem}
+.tog[aria-pressed="true"] .mark{background:var(--good);border-color:var(--good);color:var(--surface)}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{font-size:.74rem;padding:2px 8px;border-radius:999px;background:var(--plum-soft);color:var(--plum);font-weight:700;white-space:nowrap}
+.chip.orange{background:var(--accent-soft);color:var(--accent)}
+.chip.green{background:var(--good-soft);color:var(--good)}
+.chip.red{background:var(--bad-soft);color:var(--bad)}
+.list{display:grid;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;color:var(--ink);font:inherit;cursor:pointer;width:100%}
+.item:first-child{border-top:0}
+.item:hover{background:var(--bg)}
+.rank{font-family:var(--f-display);font-weight:800;color:var(--muted);width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+.item .main{min-width:0;display:grid;gap:4px}
+.item .nm{font-weight:700;overflow-wrap:anywhere}
+.item .pts{font-family:var(--f-display);font-weight:800;font-size:1.3rem;color:var(--accent);font-variant-numeric:tabular-nums}
+.ref{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.ref .top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.winner{display:grid;gap:6px;justify-items:center;text-align:center;padding:24px 16px;border-radius:var(--r);background:var(--plum);color:var(--surface)}
+.winner .nm{font-family:var(--f-display);font-weight:800;font-size:1.8rem;text-wrap:balance}
+.winner .lbl{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;opacity:.85}
+.podium{display:grid;gap:8px}
+.slot{display:grid;gap:4px;justify-items:center;text-align:center;padding:14px;border-radius:var(--r);background:var(--plum-soft)}
+.slot .lbl{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700}
+.slot .nm{font-family:var(--f-display);font-weight:800;font-size:1.45rem;overflow-wrap:anywhere}
+.slot.win{background:var(--plum);color:var(--surface);padding:20px 14px}
+.slot.win .lbl{color:var(--surface);opacity:.85}
+.slot.win .nm{font-size:1.9rem}
+.slot.off{opacity:.55}
+.confirm{display:grid;gap:10px;padding:12px;border-radius:10px;background:var(--bad-soft)}
+.grid2{display:grid;gap:16px}
+@media (min-width:820px){.grid2{grid-template-columns:1fr 1fr;align-items:start}}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.92rem;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.tog,.btn{transition:background .15s,border-color .15s}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandline">
+      <h1>Puntos <span>Casa Embrujada</span></h1>
+      <div class="when">Presas, Tezontepec · Sorteo en vivo por Google Meet · 2 nov, 5:00 pm</div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="registrar">Registrar</button>
+      <button role="tab" data-tab="participantes">Participantes</button>
+      <button role="tab" data-tab="referidos">Referidos</button>
+      <button role="tab" data-tab="sorteo">Sorteo</button>
+      <button role="tab" data-tab="ajustes">Ajustes</button>
+    </nav>
+  </div>
+</header>
+<main><div class="wrap" id="view"></div></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const DIAS=[{id:"d30",label:"Vie 30 oct"},{id:"d31",label:"Sáb 31 oct"},{id:"d01",label:"Dom 1 nov"}];
+const MARCAS=[{id:"tekton",label:"Tekton"},{id:"bacru",label:"Bacru"},{id:"eupalinos",label:"Eupalinos"}];
+const DEF={seguir:1,foto:2,referido:3};
+const PLAT={instagram:"Instagram",facebook:"Facebook"};
+const INTERES={tekton:"Construir o remodelar (Tekton)",bacru:"Vender o comprar inmueble (Bacru)"};
+const METAS={tekton:5,bacru:5};
+const S={db:null,downloads:null,status:"connecting",canWrite:true,parts:new Map(),config:{...DEF},sorteo:null,
+  tab:"registrar",current:null,lookup:"",confirmDel:false,confirmDraw:false,filtro:"",refMarca:"todas"};
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const digits=s=>String(s||"").replace(/\D/g,"");
+const tel10=s=>digits(s).slice(-10);
+const fmtTel=t=>t&&t.length===10?`${t.slice(0,3)} ${t.slice(3,6)} ${t.slice(6)}`:(t||"");
+const fecha=iso=>{try{return new Date(iso).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}};
+
+function pts(p){
+  const c=S.config,sig=p.sigue||{},fo=p.fotos||{};
+  return (sig.todas?c.seguir:0)
+    +DIAS.filter(d=>fo[d.id]).length*c.foto
+    +(p.referidos||[]).filter(r=>r.estado!=="no_valido").length*c.referido;
+}
+function ranked(){return [...S.parts.values()].map(p=>({p,n:pts(p)})).sort((a,b)=>b.n-a.n||String(a.p.nombre).localeCompare(b.p.nombre))}
+function allRefs(){const out=[];for(const p of S.parts.values())for(const r of (p.referidos||[]))out.push({r,p});return out.sort((a,b)=>String(b.r.fecha).localeCompare(String(a.r.fecha)))}
+
+let toastT;
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
+
+async function write(fn){
+  if(!S.db){toast("Sin conexión a la base de datos: abre la página desde claude.ai con tu sesión iniciada.");return false}
+  if(!S.canWrite){toast("Tu acceso es de solo lectura. Pide al dueño que te comparta como Colaborador.");return false}
+  try{await fn();return true}
+  catch(e){
+    const code=e&&e.code;
+    if(code==="invalid_argument"){S.canWrite=false;toast("No se pudo guardar: tu acceso es de solo lectura.");render()}
+    else if(code==="quota_exceeded")toast("La base de datos está llena. Exporta y borra registros viejos.");
+    else if(code==="resource_exhausted")toast("Demasiados cambios seguidos. Espera unos segundos.");
+    else toast("No se pudo guardar. Revisa tu conexión e intenta de nuevo.");
+    return false;
+  }
+}
+const pref=id=>S.db.collection("participantes").doc(id);
+
+/* ---------- render ---------- */
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===S.tab)));
+  renderStats();
+  const v=document.getElementById("view");
+  let banner="";
+  if(S.status==="connecting")banner=`<div class="banner">Conectando con la base de datos…</div>`;
+  else if(S.status==="offline")banner=`<div class="banner"><b>No se pueden guardar registros aquí.</b> Abre esta página desde claude.ai con tu sesión iniciada. Si eres del staff, pide al dueño que te comparta la página como Colaborador.</div>`;
+  else if(!S.canWrite)banner=`<div class="banner">Estás viendo en modo de solo lectura. Para registrar puntos necesitas acceso de Colaborador.</div>`;
+  const views={registrar:vRegistrar,participantes:vParticipantes,referidos:vReferidos,sorteo:vSorteo,ajustes:vAjustes};
+  v.innerHTML=banner+views[S.tab]();
+  if(S.tab==="registrar"&&!S.current){const i=document.getElementById("lookup");if(i&&document.activeElement===document.body)i.focus({preventScroll:true})}
+}
+function renderStats(){
+  const r=ranked(),refs=allRefs().filter(x=>x.r.estado!=="no_valido");
+  const boletos=r.reduce((a,x)=>a+x.n,0);
+  const parts=[...S.parts.values()];
+  const tk=refs.filter(x=>x.r.marca==="tekton").length+parts.filter(p=>p.interes==="tekton").length,
+        bc=refs.filter(x=>x.r.marca==="bacru").length+parts.filter(p=>p.interes==="bacru").length;
+  document.getElementById("stats").innerHTML=
+    `<div class="stat"><b>${S.parts.size}</b> participantes</div>`+
+    `<div class="stat"><b>${boletos}</b> boletos en el sorteo</div>`+
+    `<div class="stat goal"><b>${tk}/${METAS.tekton}</b> prospectos Tekton</div>`+
+    `<div class="stat goal"><b>${bc}/${METAS.bacru}</b> inmuebles Bacru</div>`;
+}
+
+function vRegistrar(){
+  if(S.current&&S.parts.has(S.current))return vPersona(S.parts.get(S.current));
+  const t=tel10(S.lookup),found=t.length===10&&S.parts.get(t);
+  let below="";
+  if(t.length===10&&!found){
+    below=`<form class="card" id="f-nuevo" autocomplete="off">
+      <h2>Nuevo participante · ${esc(fmtTel(t))}</h2>
+      <label class="field">Nombre completo<input type="text" id="n-nombre" required maxlength="80" placeholder="Ej. Sofía Hernández"></label>
+      <div class="field"><span class="small"><b>¿Quién participa?</b></span>
+        <div class="seg">
+          <label><input type="radio" name="n-tipo" id="n-tipo-nino" value="nino" checked> Niña o niño</label>
+          <label><input type="radio" name="n-tipo" id="n-tipo-adulto" value="adulto"> Adulto</label>
+        </div></div>
+      <label class="field">Nombre de mamá, papá o tutor (si es menor)<input type="text" id="n-tutor" maxlength="80" placeholder="Quien recibe el premio si gana"></label>
+      <label class="field">Usuario de Instagram o nombre en Facebook (opcional)<input type="text" id="n-usuario" maxlength="80" placeholder="@usuario"></label>
+      <label class="check"><input type="checkbox" id="n-contacto" checked> <span>Acepta que Tekton, Bacru o Papelería Eupalinos le contacten por WhatsApp para el sorteo y promociones.</span></label>
+      <p class="small muted">El teléfono es del adulto responsable. Se usa para avisar al ganador y no se comparte con nadie más.</p>
+      <div class="row"><button class="btn" type="submit">Registrar y sumar puntos</button></div>
+    </form>`;
+  }
+  return `<form class="card" id="f-buscar" autocomplete="off">
+      <h2>Buscar o registrar por teléfono</h2>
+      <p class="small muted">Escribe el WhatsApp de la familia. Si ya está registrado, se abre su tarjeta; si no, registra sus datos.</p>
+      <div class="row">
+        <label class="field">Teléfono a 10 dígitos<input type="tel" id="lookup" inputmode="numeric" maxlength="14" placeholder="773 123 4567" value="${esc(S.lookup)}"></label>
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+      ${t.length>0&&t.length<10?`<p class="small muted">Faltan ${10-t.length} dígitos.</p>`:""}
+    </form>${below}
+    ${S.parts.size===0&&S.status==="ready"?`<div class="empty">Aún no hay nadie registrado. El primer registro aparecerá en Participantes y empezará a sumar boletos.</div>`:""}`;
+}
+
+function vPersona(p){
+  const n=pts(p),c=S.config,sig=p.sigue||{},fo=p.fotos||{},refs=p.referidos||[];
+  const dis=S.canWrite&&S.db?"":"disabled";
+  return `<section class="card">
+    <div class="person-head">
+      <div class="who">
+        <div class="name">${esc(p.nombre)}</div>
+        <div class="small muted">${esc(fmtTel(p.telefono))} · ${p.tipo==="adulto"?"Adulto":"Niña o niño"}${p.tutor?` · Tutor: ${esc(p.tutor)}`:""}</div>
+        <div class="chips" style="margin-top:6px">${p.contacto?`<span class="chip green">Acepta contacto</span>`:`<span class="chip red">No contactar</span>`}${p.origen==="meta"?`<span class="chip">Formulario Meta</span>`:p.origen==="landing"?`<span class="chip">Landing</span>`:""}${p.interes&&INTERES[p.interes]?`<span class="chip orange">${INTERES[p.interes]}</span>`:""}</div>
+      </div>
+      <div class="score"><b>${n}</b><span>${n===1?"punto · 1 boleto":`puntos · ${n} boletos`}</span></div>
+    </div>
+    <h3>Sigue a Tekton, Bacru y Eupalinos · +${c.seguir} (en Instagram o Facebook)</h3>
+    <div class="toggles">${Object.keys(PLAT).map(k=>{const on=!!sig.todas&&sig.plataforma===k;return `<button type="button" class="tog" data-act="sigue" data-k="${k}" aria-pressed="${on}" ${dis}><span>Las 3 en ${PLAT[k]}<br><small>${on?"Punto sumado":"Tocar si ya las sigue"}</small></span><span class="mark">${on?"✓":""}</span></button>`}).join("")}</div>
+    <label class="field">Usuario de Instagram o nombre en Facebook (para verificar si gana)<input type="text" id="p-usuario" maxlength="80" value="${esc(sig.usuario||"")}" placeholder="@usuario" ${dis}></label>
+    <h3>Foto en la casa compartida con hashtag · +${c.foto} por día</h3>
+    <div class="toggles">${DIAS.map(d=>`<button type="button" class="tog" data-act="foto" data-k="${d.id}" aria-pressed="${!!fo[d.id]}" ${dis}><span>${d.label}<br><small>${fo[d.id]?"Publicada":"#tektonhalloween…"}</small></span><span class="mark">${fo[d.id]?"✓":""}</span></button>`).join("")}</div>
+    <h3>Clientes recomendados · +${c.referido} cada uno</h3>
+    ${refs.length?`<div style="display:grid;gap:8px">${refs.map(r=>refCard(r,p,dis)).join("")}</div>`:`<p class="small muted">Sin recomendaciones todavía.</p>`}
+    <form class="ref" id="f-ref" autocomplete="off">
+      <b class="small">Agregar recomendación</b>
+      <div class="row">
+        <label class="field">Nombre<input type="text" id="r-nombre" required maxlength="80"></label>
+        <label class="field">Teléfono<input type="tel" id="r-tel" inputmode="numeric" maxlength="14" required></label>
+      </div>
+      <div class="row">
+        <label class="field">Para<select id="r-marca"><option value="tekton">Tekton · quiere construir o remodelar</option><option value="bacru">Bacru · quiere vender o comprar inmueble</option></select></label>
+        <label class="field">Detalle (opcional)<input type="text" id="r-interes" maxlength="120" placeholder="Ej. terreno en Presas, casa de 2 pisos"></label>
+      </div>
+      <div class="row"><button class="btn plum" type="submit" ${dis}>Agregar +${c.referido} puntos</button></div>
+    </form>
+    <div class="row" style="justify-content:space-between">
+      <button class="btn ghost" type="button" data-act="cerrar">Listo · registrar a otra persona</button>
+      ${S.confirmDel?"":`<button class="btn ghost" type="button" data-act="pedir-borrar" ${dis}>Eliminar participante</button>`}
+    </div>
+    ${S.confirmDel?`<div class="confirm"><p><b>¿Eliminar a ${esc(p.nombre)}?</b> Se pierden sus ${n} puntos y sus recomendaciones. No se puede deshacer.</p><div class="row"><button class="btn danger" type="button" data-act="borrar">Sí, eliminar</button><button class="btn ghost" type="button" data-act="no-borrar">Cancelar</button></div></div>`:""}
+  </section>`;
+}
+function refCard(r,p,dis){
+  const est={pendiente:["Por contactar","orange"],contactado:["Contactado","green"],no_valido:["No válido · sin puntos","red"]}[r.estado]||["Por contactar","orange"];
+  return `<div class="ref"><div class="top"><b>${esc(r.nombre)}</b><span class="chips"><span class="chip">${r.marca==="bacru"?"Bacru":"Tekton"}</span><span class="chip ${est[1]}">${est[0]}</span></span></div>
+    <div class="small muted">${esc(fmtTel(r.telefono))}${r.interes?` · ${esc(r.interes)}`:""}</div>
+    <div class="row"><label class="field">Estado<select data-act="estado" data-id="${esc(r.id)}" data-p="${esc(p.telefono)}" ${dis}>
+      <option value="pendiente"${r.estado==="pendiente"?" selected":""}>Por contactar</option>
+      <option value="contactado"${r.estado==="contactado"?" selected":""}>Contactado</option>
+      <option value="no_valido"${r.estado==="no_valido"?" selected":""}>No válido (quita puntos)</option></select></label></div></div>`;
+}
+
+function vParticipantes(){
+  const q=S.filtro.trim().toLowerCase(),qd=digits(q);
+  const r=ranked().filter(({p})=>!q||String(p.nombre).toLowerCase().includes(q)||String(p.tutor||"").toLowerCase().includes(q)||(qd&&p.telefono.includes(qd)));
+  return `<div class="card"><div class="row"><label class="field">Buscar por nombre o teléfono<input type="text" id="filtro" value="${esc(S.filtro)}" placeholder="Nombre, tutor o teléfono"></label></div></div>
+  ${S.parts.size===0?`<div class="empty">Aquí verás a cada participante ordenado por puntos. Registra al primero en la pestaña Registrar.</div>`:
+    r.length===0?`<div class="empty">Nadie coincide con “${esc(S.filtro)}”.</div>`:
+    `<div class="list">${r.map(({p,n},i)=>{const sig=p.sigue||{},fo=p.fotos||{};const nr=(p.referidos||[]).filter(x=>x.estado!=="no_valido").length;
+      return `<button class="item" type="button" data-act="abrir" data-id="${esc(p.telefono)}"><span class="rank">${i+1}</span><span class="main"><span class="nm">${esc(p.nombre)}</span><span class="small muted">${esc(fmtTel(p.telefono))}${p.tipo==="adulto"?"":" · niño(a)"}</span>
+      <span class="chips">${sig.todas?`<span class="chip">Sigue a las 3 · ${PLAT[sig.plataforma]||""}</span>`:""}${p.origen==="meta"?`<span class="chip">Meta</span>`:p.origen==="landing"?`<span class="chip">Landing</span>`:""}${DIAS.filter(d=>fo[d.id]).length?`<span class="chip orange">${DIAS.filter(d=>fo[d.id]).length} foto(s)</span>`:""}${nr?`<span class="chip green">${nr} referido(s)</span>`:""}</span></span><span class="pts">${n}</span></button>`}).join("")}</div>`}`;
+}
+
+function vReferidos(){
+  const all=allRefs(),list=all.filter(x=>S.refMarca==="todas"||x.r.marca===S.refMarca);
+  const opt=(v,l)=>`<option value="${v}"${S.refMarca===v?" selected":""}>${l}</option>`;
+  return `<div class="card"><h2>Prospectos para Tekton y Bacru</h2>
+    <p class="small muted">Cada recomendación es un contacto comercial. Márcala como Contactado cuando le hablen, o No válido si el dato es falso (así se quitan los puntos).</p>
+    <div class="row"><label class="field">Mostrar<select id="ref-marca">${opt("todas","Todas")}${opt("tekton","Solo Tekton")}${opt("bacru","Solo Bacru")}</select></label>
+    <button class="btn ghost" type="button" data-act="csv-ref" ${all.length?"":"disabled"}>Descargar CSV</button></div></div>
+  ${(()=>{const ints=[...S.parts.values()].filter(p=>p.interes&&(S.refMarca==="todas"||p.interes===S.refMarca));
+    return ints.length?`<div class="card tablewrap"><h3>Interesados del formulario de Meta</h3><table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Interés</th><th>Contacto</th></tr></thead><tbody>${ints.map(p=>`<tr><td>${esc(p.nombre)}</td><td>${esc(fmtTel(p.telefono))}</td><td>${INTERES[p.interes]||""}</td><td>${p.contacto?"Acepta":"No contactar"}</td></tr>`).join("")}</tbody></table></div>`:""})()}
+  ${list.length===0?`<div class="empty">Todavía no hay recomendaciones. Se agregan desde la tarjeta de cada participante.</div>`:
+  `<div class="card tablewrap"><table><thead><tr><th>Prospecto</th><th>Teléfono</th><th>Para</th><th>Detalle</th><th>Estado</th><th>Recomendó</th></tr></thead><tbody>
+   ${list.map(({r,p})=>`<tr><td>${esc(r.nombre)}</td><td>${esc(fmtTel(r.telefono))}</td><td>${r.marca==="bacru"?"Bacru":"Tekton"}</td><td>${esc(r.interes||"")}</td><td>${{pendiente:"Por contactar",contactado:"Contactado",no_valido:"No válido"}[r.estado]||"Por contactar"}</td><td>${esc(p.nombre)}</td></tr>`).join("")}
+   </tbody></table></div>`}`;
+}
+
+const ROL=i=>i===0?"Ganador":`Suplente ${i}`;
+const maskTel=t=>t&&t.length===10?`${t.slice(0,3)} *** ${t.slice(6)}`:"";
+function vSorteo(){
+  const s=S.sorteo&&S.sorteo.orden?S.sorteo:null;
+  const usados=new Set([...((S.sorteo&&S.sorteo.historial)||[]).flatMap(h=>(h.orden||[]).map(g=>g.telefono)),...(s?s.orden.map(g=>g.telefono):[])]);
+  const pool=ranked().filter(x=>x.n>0&&!usados.has(x.p.telefono)),tot=pool.reduce((a,x)=>a+x.n,0);
+  const w=S.canWrite&&S.db,top=pool.slice(0,5);
+  const cur=s?s.orden[s.actual]:null,terminado=s&&(!cur||cur.estado==="entregado");
+  const puedeSortear=!s||!cur;
+  let live="";
+  if(s){
+    const n=s.orden.length,seq=[...Array(n).keys()].reverse(),rev=seq.slice(0,s.revelados||0),todo=rev.length===n;
+    live=`<div class="card"><h2>Sorteo en vivo · ${fecha(s.fecha)}</h2>
+      <p class="small muted">Comparte esta pantalla en el Meet. Los teléfonos aparecen ocultos.</p>
+      <div class="podium">${seq.map(i=>{const g=s.orden[i],shown=rev.includes(i);
+        const chip=g.estado==="entregado"?`<span class="chip green">Premio confirmado</span>`:g.estado==="descartado"?`<span class="chip red">No contestó o no cumplió</span>`:(todo&&i===s.actual)?`<span class="chip orange">Le toca el premio</span>`:"";
+        return `<div class="slot${i===0?" win":""}${g.estado==="descartado"?" off":""}"><span class="lbl">${ROL(i)}</span>${shown?`<span class="nm">${esc(g.nombre)}</span><span class="small">${esc(maskTel(g.telefono))} · ${g.puntos} boletos</span>${chip}`:`<span class="nm">?</span>`}</div>`}).join("")}</div>
+      ${todo?"":`<div class="row"><button class="btn" type="button" data-act="revelar" ${w?"":"disabled"}>Revelar ${ROL(seq[rev.length]).toLowerCase()}</button></div>`}
+    </div>`;
+    if(todo&&cur&&cur.estado==="pendiente"){
+      const pl=cur.plataforma||"instagram",cuentas=pl==="facebook"?"Tekton Arquitectos, Inmobiliaria BACRU y Eupalinos Papelería":"@tektonarquitectos, @inmobiliariabacru y @eupalinos_papeleria";
+      const sig=s.orden[s.actual+1];
+      live+=`<div class="card"><h2>Verificar a ${esc(cur.nombre)} (${ROL(s.actual).toLowerCase()})</h2>
+        <p class="small">WhatsApp: <b>${esc(fmtTel(cur.telefono))}</b>${cur.tutor?` · Tutor: ${esc(cur.tutor)}`:""}.</p>
+        <p class="small">${cur.sigueTodas?`Dijo que sigue a las 3 en <b>${PLAT[pl]}</b> como <b>${esc(cur.usuario||"(sin usuario)")}</b>. Búscalo en la lista de seguidores de ${cuentas}.`:`<b>No tiene marcado el punto de seguir</b>: sus boletos vienen de fotos o recomendaciones.`} Revisa también que sus recomendaciones sean reales. Si no contesta en 48 horas, pasa al siguiente.</p>
+        <div class="row"><button class="btn" type="button" data-act="entregar" ${w?"":"disabled"}>Cumple · confirmar premio</button>
+        <button class="btn ghost" type="button" data-act="descartar" ${w?"":"disabled"}>No contestó o no cumple · ${sig?`pasar a ${ROL(s.actual+1).toLowerCase()}`:"descartar"}</button></div></div>`;
+    } else if(todo&&!cur){
+      live+=`<div class="banner">Ninguno de los ${n} pudo recibir el premio. Puedes hacer un sorteo nuevo sin ellos.</div>`;
+    } else if(terminado){
+      live+=`<div class="winner"><span class="lbl">Premio confirmado</span><span class="nm">${esc(cur.nombre)}</span><span>${esc(fmtTel(cur.telefono))}${cur.tutor?` · Tutor: ${esc(cur.tutor)}`:""}</span></div>`;
+    }
+  }
+  const hist=(S.sorteo&&S.sorteo.historial)||[];
+  if(hist.length)live+=`<div class="card"><h3>Sorteos anteriores</h3>${hist.map(h=>`<p class="small">${fecha(h.fecha)} · ${(h.orden||[]).map(g=>esc(g.nombre)).join(", ")}${h.motivo?` · ${esc(h.motivo)}`:""}</p>`).join("")}</div>`;
+  const dis=w&&pool.length&&puedeSortear?"":"disabled";
+  return `<div class="grid2"><div class="card">
+    <h2>${s?(puedeSortear?"Sortear de nuevo":"Sorteo realizado"):"Sorteo en vivo · 2 nov, 5:00 pm"}</h2>
+    <p class="small muted">Cada punto es un boleto. Al sortear se eligen al azar un ganador y 3 suplentes, sin repetir persona; en el live se revelan del suplente 3 al ganador. Si el ganador no contesta o no cumple, el premio pasa al suplente 1, luego al 2 y al 3.</p>
+    <div class="chips"><span class="chip">${pool.length} personas</span><span class="chip orange">${tot} boletos</span></div>
+    ${S.confirmDraw?`<div class="confirm"><p><b>¿Hacer el sorteo ahora?</b> Se eligen ganador y 3 suplentes. El resultado se guarda y lo ven todos los que tienen la página abierta; se revela uno por uno.</p><div class="row"><button class="btn" type="button" data-act="sortear">Sí, sortear</button><button class="btn ghost" type="button" data-act="no-sortear">Cancelar</button></div></div>`
+      :`<div class="row"><button class="btn" type="button" data-act="pedir-sorteo" ${dis}>${s?"Sortear de nuevo":"Hacer el sorteo"}</button></div>`}
+    ${top.length?`<h3>Más boletos</h3><div class="tablewrap"><table><thead><tr><th>Participante</th><th>Boletos</th><th>Probabilidad</th></tr></thead><tbody>${top.map(x=>`<tr><td>${esc(x.p.nombre)}</td><td>${x.n}</td><td>${(100*x.n/tot).toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`:`<p class="small muted">Nadie tiene puntos todavía.</p>`}
+  </div><div style="display:grid;gap:16px">${live||`<div class="empty">Aquí aparecerán el ganador y los 3 suplentes cuando hagan el sorteo.</div>`}</div></div>`;
+}
+function vAjustes(){
+  const c=S.config,dis=S.canWrite&&S.db?"":"disabled";
+  return `<div class="grid2"><form class="card" id="f-config">
+    <h2>Valor de cada acción</h2>
+    <p class="small muted">Si cambias un valor, se recalculan los puntos de todos. Conviene dejarlo fijo antes del 30 de octubre.</p>
+    <label class="field">Seguir a las 3 marcas (en Instagram o Facebook)<input type="number" id="c-seguir" min="0" max="20" value="${c.seguir}"></label>
+    <label class="field">Foto compartida con hashtag (por día)<input type="number" id="c-foto" min="0" max="20" value="${c.foto}"></label>
+    <label class="field">Recomendar un cliente (cada uno)<input type="number" id="c-referido" min="0" max="20" value="${c.referido}"></label>
+    <div class="row"><button class="btn" type="submit" ${dis}>Guardar valores</button></div>
+  </form><div style="display:grid;gap:16px"><div class="card">
+    <h2>Importar registros del formulario de Meta</h2>
+    <p class="small muted">En Meta Business Suite, abre Centro de clientes potenciales (o en el Administrador de anuncios, Formularios instantáneos) y descarga los registros en CSV. Súbelo aquí cada vez que quieras actualizar: nadie se duplica, porque cada teléfono es una sola persona.</p>
+    <p class="small muted">A cada registro se le suma el punto de seguir a las 3; se comprueba solo si gana.</p>
+    ${S.importando?`<div class="banner">${S.importando.fin?"Listo":"Importando"}: ${S.importando.hechos} de ${S.importando.total} · ${S.importando.nuevos} nuevos · ${S.importando.actualizados} actualizados${S.importando.omitidos?` · ${S.importando.omitidos} sin teléfono válido`:""}</div>`:""}
+    <div class="row"><label class="btn ghost" for="meta-csv" ${dis?'aria-disabled="true"':""}>Elegir archivo CSV de Meta<input type="file" id="meta-csv" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden ${dis}></label></div>
+  </div><div class="card">
+    <h2>Respaldo</h2>
+    <p class="small muted">Descarga la lista completa con teléfonos y puntos para tenerla en Excel o Google Sheets.</p>
+    <div class="row"><button class="btn ghost" type="button" data-act="csv-part" ${S.parts.size?"":"disabled"}>Descargar participantes (CSV)</button></div>
+    <h3>Cómo validar cada punto</h3>
+    <p class="small"><b>Seguir:</b> se suma al registrarse; al ganador se le busca en la lista de seguidores de las 3 cuentas. <b>Foto:</b> que te enseñen la publicación con el hashtag; una por día del evento. <b>Recomendación:</b> nombre y teléfono reales; si al llamar no existe, márcala como No válido.</p>
+  </div></div></div>`;
+}
+
+/* ---------- actions ---------- */
+function abrir(id){S.current=id;S.confirmDel=false;S.tab="registrar";render();window.scrollTo({top:0})}
+async function toggleSigue(k){
+  const p=S.parts.get(S.current);if(!p)return;
+  const sig=p.sigue||{},on=!(sig.todas&&sig.plataforma===k);
+  const nuevo={todas:on,plataforma:on?k:"",usuario:sig.usuario||""};
+  const ok=await write(()=>pref(p.telefono).update({sigue:nuevo,actualizado:new Date().toISOString()}));
+  if(ok){p.sigue=nuevo;render()}
+}
+async function guardarUsuario(v){
+  const p=S.parts.get(S.current);if(!p)return;const sig=p.sigue||{};if((sig.usuario||"")===v)return;
+  const ok=await write(()=>pref(p.telefono).update({sigue:{usuario:v},actualizado:new Date().toISOString()}));
+  if(ok){p.sigue={...sig,usuario:v};toast("Usuario guardado")}
+}
+async function toggle(field,k){
+  const p=S.parts.get(S.current);if(!p)return;
+  const val=!((p[field]||{})[k]);
+  const ok=await write(()=>pref(p.telefono).update({[field]:{[k]:val},actualizado:new Date().toISOString()}));
+  if(ok){p[field]={...(p[field]||{}),[k]:val};render()}
+}
+async function setRefs(p,refs){
+  const ok=await write(()=>pref(p.telefono).update({referidos:refs,actualizado:new Date().toISOString()}));
+  if(ok){p.referidos=refs;render()}
+  return ok;
+}
+function csv(rows){return "﻿"+rows.map(r=>r.map(v=>{const s=String(v??"");return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(",")).join("\r\n")}
+async function bajar(nombre,rows){
+  if(!S.downloads){toast("Las descargas no están disponibles en esta vista.");return}
+  try{await S.downloads.save({filename:nombre,data:csv(rows)});toast("Archivo listo")}
+  catch(e){if(e&&e.code!=="declined")toast("No se pudo descargar el archivo.")}
+}
+
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.confirmDraw=false;render()});
+document.addEventListener("input",e=>{
+  if(e.target.id==="lookup"){S.lookup=e.target.value;const t=tel10(S.lookup);if(t.length===10&&S.parts.has(t)){S.lookup="";abrir(t)}else if(t.length===10||digits(S.lookup).length===9){const pos=e.target.selectionStart;render();const i=document.getElementById("lookup");if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}}}}
+  if(e.target.id==="filtro"){S.filtro=e.target.value;const pos=e.target.selectionStart;render();const i=document.getElementById("filtro");i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}}
+});
+document.addEventListener("change",async e=>{
+  if(e.target.id==="ref-marca"){S.refMarca=e.target.value;render()}
+  if(e.target.id==="p-usuario")guardarUsuario(e.target.value.trim());
+  if(e.target.id==="meta-csv"&&e.target.files[0])importarMeta(e.target.files[0]);
+  if(e.target.dataset.act==="estado"){const p=S.parts.get(e.target.dataset.p);if(!p)return;
+    const refs=(p.referidos||[]).map(r=>r.id===e.target.dataset.id?{...r,estado:e.target.value}:r);
+    if(!await setRefs(p,refs))render()}
+});
+document.addEventListener("submit",async e=>{
+  e.preventDefault();const f=e.target;
+  if(f.id==="f-buscar"){const t=tel10(S.lookup);if(t.length!==10){toast("Escribe los 10 dígitos del teléfono.");return}if(S.parts.has(t)){S.lookup="";abrir(t)}else render()}
+  if(f.id==="f-nuevo"){
+    const t=tel10(S.lookup),nombre=document.getElementById("n-nombre").value.trim();
+    if(!nombre){toast("Escribe el nombre.");return}
+    const doc={nombre,telefono:t,tipo:document.getElementById("n-tipo-adulto").checked?"adulto":"nino",
+      tutor:document.getElementById("n-tutor").value.trim(),contacto:document.getElementById("n-contacto").checked,
+      sigue:{todas:false,plataforma:"",usuario:document.getElementById("n-usuario").value.trim()},fotos:{d30:false,d31:false,d01:false},referidos:[],
+      origen:"evento",creado:new Date().toISOString()};
+    let existia=false;
+    const ok=await write(async()=>{const ex=await pref(t).get();if(ex.exists){existia=true;return}await pref(t).set(doc)});
+    if(ok&&existia){S.lookup="";toast("Ese teléfono ya estaba registrado");abrir(t)}
+    else if(ok){S.parts.set(t,doc);S.lookup="";toast("Registrado");abrir(t)}
+  }
+  if(f.id==="f-ref"){
+    const p=S.parts.get(S.current);if(!p)return;
+    const nombre=document.getElementById("r-nombre").value.trim(),t=tel10(document.getElementById("r-tel").value);
+    if(!nombre||t.length!==10){toast("Escribe nombre y teléfono de 10 dígitos de la persona recomendada.");return}
+    if((p.referidos||[]).some(r=>r.telefono===t)){toast("Esa persona ya está en sus recomendaciones.");return}
+    const dup=allRefs().find(x=>x.r.telefono===t);
+    const r={id:Math.random().toString(36).slice(2,10),nombre,telefono:t,marca:document.getElementById("r-marca").value,
+      interes:document.getElementById("r-interes").value.trim(),estado:"pendiente",fecha:new Date().toISOString()};
+    if(await setRefs(p,[...(p.referidos||[]),r]))toast(dup?`Agregado. Ojo: ${dup.p.nombre} ya había recomendado ese teléfono.`:"Recomendación agregada");
+  }
+  if(f.id==="f-config"){
+    const num=id=>Math.max(0,Math.min(20,parseInt(document.getElementById(id).value,10)||0));
+    const c={seguir:num("c-seguir"),foto:num("c-foto"),referido:num("c-referido")};
+    if(await write(()=>S.db.doc("config/puntos").set(c))){S.config=c;toast("Valores guardados");render()}
+  }
+});
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b||b.tagName==="SELECT")return;
+  const a=b.dataset.act;
+  if(a==="sigue")toggleSigue(b.dataset.k);
+  else if(a==="foto")toggle("fotos",b.dataset.k);
+  else if(a==="abrir")abrir(b.dataset.id);
+  else if(a==="cerrar"){S.current=null;S.confirmDel=false;render()}
+  else if(a==="pedir-borrar"){S.confirmDel=true;render()}
+  else if(a==="no-borrar"){S.confirmDel=false;render()}
+  else if(a==="borrar"){const id=S.current;if(await write(()=>pref(id).delete())){S.parts.delete(id);S.current=null;S.confirmDel=false;toast("Participante eliminado");render()}}
+  else if(a==="pedir-sorteo"){S.confirmDraw=true;render()}
+  else if(a==="no-sortear"){S.confirmDraw=false;render()}
+  else if(a==="sortear")sortear();
+  else if(a==="csv-part")bajar("participantes-casa-embrujada.csv",[["Nombre","Teléfono","Tipo","Tutor","Acepta contacto","Sigue a las 3","Plataforma","Usuario","Interés","Origen","Fotos","Referidos válidos","Puntos","Registrado"],
+    ...ranked().map(({p,n})=>{const s=p.sigue||{};return [p.nombre,p.telefono,p.tipo==="adulto"?"Adulto":"Niño(a)",p.tutor||"",p.contacto?"Sí":"No",s.todas?"Sí":"No",PLAT[s.plataforma]||"",s.usuario||"",INTERES[p.interes]||"",p.origen==="meta"?"Formulario Meta":"Evento",DIAS.filter(d=>(p.fotos||{})[d.id]).length,(p.referidos||[]).filter(r=>r.estado!=="no_valido").length,n,p.creado||""]})]);
+  else if(a==="revelar")cambiarSorteo(r=>{r.revelados=Math.min(r.orden.length,(r.revelados||0)+1)});
+  else if(a==="entregar")cambiarSorteo(r=>{r.orden[r.actual].estado="entregado"},"Premio confirmado");
+  else if(a==="descartar")cambiarSorteo(r=>{r.orden[r.actual].estado="descartado";r.actual+=1},"Pasa al siguiente");
+  else if(a==="csv-ref")bajar("prospectos-tekton-bacru.csv",[["Prospecto","Teléfono","Para","Detalle","Estado","Recomendó","Tel. de quien recomendó","Fecha"],
+    ...allRefs().map(({r,p})=>[r.nombre,r.telefono,r.marca==="bacru"?"Bacru":"Tekton",r.interes||"",{pendiente:"Por contactar",contactado:"Contactado",no_valido:"No válido"}[r.estado]||"",p.nombre,p.telefono,r.fecha||""])]);
+});
+
+function parseCSV(t,d){const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===d){row.push(f);f=""}
+    else if(c==="\n"){row.push(f.replace(/\r$/,""));rows.push(row);row=[];f=""}else f+=c}
+  if(f||row.length){row.push(f.replace(/\r$/,""));rows.push(row)}return rows}
+function interesDe(v){v=String(v||"").toLowerCase();if(/tekton|constru|remodel|diseñ/.test(v))return "tekton";if(/bacru|vend|compr|inmueble|terreno|casa/.test(v))return "bacru";return ""}
+async function importarMeta(file){
+  const input=document.getElementById("meta-csv");
+  if(!S.db||!S.canWrite){toast("Necesitas acceso de Colaborador para importar.");return}
+  const u8=new Uint8Array(await file.arrayBuffer());let text;
+  if(u8[0]===0xFF&&u8[1]===0xFE)text=new TextDecoder("utf-16le").decode(u8.subarray(2));
+  else if(u8[0]===0xFE&&u8[1]===0xFF)text=new TextDecoder("utf-16be").decode(u8.subarray(2));
+  else text=new TextDecoder("utf-8").decode(u8).replace(/^﻿/,"");
+  const first=text.split(/\r?\n/)[0],delim=(first.match(/\t/g)||[]).length>(first.match(/,/g)||[]).length?"\t":",";
+  const rows=parseCSV(text,delim).filter(r=>r.some(c=>c.trim()));
+  if(input)input.value="";
+  if(rows.length<2){toast("El archivo no tiene registros.");return}
+  const head=rows[0].map(h=>h.trim().toLowerCase());
+  const col=keys=>{for(const k of keys){const i=head.findIndex(h=>h.includes(k));if(i>=0)return i}return -1};
+  const cPhone=col(["phone_number","phone","teléfono","telefono","whatsapp"]),cUser=col(["usuario","instagram","facebook_o","@"]);
+  let cName=col(["full_name","nombre_completo"]);if(cName<0){const i=head.findIndex((h,j)=>h.includes("nombre")&&j!==cUser);cName=i}
+  const cFirst=col(["first_name"]),cLast=col(["last_name"]),cInt=col(["interes","interés","te_interesa"]),cPlat=head.indexOf("platform"),cRed=col(["dónde_nos","donde_nos","red_social","en_qué_red","en_que_red"]),cTime=col(["created_time"]);
+  if(cPhone<0){toast("No encontré la columna de teléfono. Descarga los registros desde Meta en formato CSV.");return}
+  const val=(r,i)=>i>=0?String(r[i]||"").replace(/^[a-z]:/i,"").trim():"";
+  const st={total:rows.length-1,hechos:0,nuevos:0,actualizados:0,omitidos:0,fin:false};S.importando=st;render();
+  for(const r of rows.slice(1)){
+    const t=tel10(val(r,cPhone));
+    if(t.length!==10){st.omitidos++;st.hechos++;continue}
+    const red=(val(r,cRed)+" "+val(r,cPlat)).toLowerCase();
+    const plat=/insta|\big\b/.test(red)?"instagram":/face|\bfb\b/.test(red)?"facebook":"instagram";
+    const usuario=val(r,cUser),interes=interesDe(val(r,cInt));
+    const nombre=val(r,cName)||[val(r,cFirst),val(r,cLast)].filter(Boolean).join(" ")||"Sin nombre";
+    const ex=S.parts.get(t);let ok;
+    if(ex){const s=ex.sigue||{};const upd={sigue:{todas:true,plataforma:s.todas&&s.plataforma?s.plataforma:plat,usuario:s.usuario||usuario},actualizado:new Date().toISOString()};
+      if(interes&&!ex.interes)upd.interes=interes;
+      ok=await write(()=>pref(t).update(upd));if(ok)st.actualizados++}
+    else{const doc={nombre,telefono:t,tipo:"adulto",tutor:"",contacto:true,interes,origen:"meta",
+        sigue:{todas:true,plataforma:plat,usuario},fotos:{d30:false,d31:false,d01:false},referidos:[],
+        creado:val(r,cTime)||new Date().toISOString()};
+      ok=await write(()=>pref(t).set(doc));if(ok){st.nuevos++;S.parts.set(t,doc)}}
+    if(!ok)break;
+    st.hechos++;if(st.hechos%10===0)render();
+  }
+  st.fin=true;render();toast(`Importación lista: ${st.nuevos} nuevos, ${st.actualizados} actualizados`);
+}
+function randInt(n){const a=new Uint32Array(1),lim=Math.floor(0x100000000/n)*n;let v;do{crypto.getRandomValues(a);v=a[0]}while(v>=lim);return v%n}
+function pickMany(pool,k){
+  const left=[...pool],out=[];
+  while(out.length<k&&left.length){
+    let r=randInt(left.reduce((a,x)=>a+x.n,0)),idx=0;
+    for(let i=0;i<left.length;i++){if(r<left[i].n){idx=i;break}r-=left[i].n}
+    out.push(left.splice(idx,1)[0]);
+  }
+  return out;
+}
+async function guardarSorteo(res,msg){
+  if(await write(()=>S.db.doc("sorteo/resultado").set(res))){S.sorteo=res;S.confirmDraw=false;if(msg)toast(msg);render()}
+}
+async function sortear(){
+  const prev=S.sorteo&&S.sorteo.orden?S.sorteo:null,hist=[...((S.sorteo&&S.sorteo.historial)||[])];
+  if(prev)hist.push({orden:prev.orden,fecha:prev.fecha,motivo:"Ninguno pudo recibir el premio"});
+  const usados=new Set(hist.flatMap(h=>(h.orden||[]).map(g=>g.telefono)));
+  const pool=ranked().filter(x=>x.n>0&&!usados.has(x.p.telefono)),tot=pool.reduce((a,x)=>a+x.n,0);
+  if(!tot){toast("No hay boletos para sortear.");return}
+  const orden=pickMany(pool,4).map(x=>{const sg=x.p.sigue||{};return {nombre:x.p.nombre,telefono:x.p.telefono,tutor:x.p.tutor||"",puntos:x.n,
+    sigueTodas:!!sg.todas,plataforma:sg.plataforma||"",usuario:sg.usuario||"",estado:"pendiente"}});
+  await guardarSorteo({orden,actual:0,revelados:0,boletos:tot,participantes:pool.length,fecha:new Date().toISOString(),historial:hist});
+}
+function cambiarSorteo(fn,msg){const s=S.sorteo;if(!s||!s.orden)return;const res={...s,orden:s.orden.map(g=>({...g}))};fn(res);guardarSorteo(res,msg)}
+
+/* ---------- boot ---------- */
+render();
+(async()=>{
+  const cl=window.claude;
+  if(!cl||!cl.use){S.status="offline";render();return}
+  const [db,user,dl]=await Promise.all([cl.use("db"),cl.use("user"),cl.use("downloads")]);
+  S.downloads=dl;
+  if(!db){S.status="offline";render();return}
+  S.db=db;S.status="ready";
+  if(user){const c=await user.can("data.write");if(c===false)S.canWrite=false}
+  render();
+  db.collection("participantes").onSnapshot(snap=>{S.parts=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.current&&!S.parts.has(S.current)&&!snap.metadata.fromCache){S.current=null}render()},
+    e=>{if(e.code==="revoked"){S.status="offline";S.db=null;render()}});
+  db.doc("config/puntos").onSnapshot(d=>{S.config=d.exists?{...DEF,...d.data()}:{...DEF};render()},()=>{});
+  db.doc("sorteo/resultado").onSnapshot(d=>{S.sorteo=d.exists?d.data():null;render()},()=>{});
+})();
+</script>
