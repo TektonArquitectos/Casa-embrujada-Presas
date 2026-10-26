@@ -383,7 +383,9 @@ function vRegistrar(){
       </div>
       ${t.length>0&&t.length<10?`<p class="small muted">Faltan ${10-t.length} dígitos.</p>`:""}
     </form>${below}
-    ${S.parts.size===0&&S.status==="ready"?`<div class="empty">Aún no hay nadie registrado. El primer registro aparecerá en Participantes y empezará a sumar boletos.</div>`:""}`;
+    ${S.parts.size===0&&S.status==="ready"?`<div class="empty">Aún no hay nadie registrado. El primer registro aparecerá en Participantes y empezará a sumar boletos.</div>`:""}
+    ${S.parts.size&&!t.length?(()=>{const recientes=[...S.parts.values()].sort((a,b)=>String(b.actualizado||b.creado||"").localeCompare(String(a.actualizado||a.creado||""))).slice(0,5);
+      return `<div class="card"><h3>Últimos registros · ${S.parts.size} en total</h3><div class="list">${recientes.map(p=>`<button class="item" type="button" data-act="abrir" data-id="${esc(p.telefono)}"><span class="rank">·</span><span class="main"><span class="nm">${esc(p.nombre)}</span><span class="small muted">${esc(fmtTel(p.telefono))}${p.origen==="landing"?" · Landing":p.origen==="meta"?" · Meta":""}${p.creado?` · ${fecha(p.creado)}`:""}</span></span><span class="pts">${pts(p)}</span></button>`).join("")}</div><p class="small muted">La lista completa está en la pestaña Participantes.</p></div>`})():""}`;
 }
 
 function vPersona(p){
