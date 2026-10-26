@@ -59,7 +59,7 @@ Flujo completo:
 ## 4. Anuncio
 
 - Formato: imagen o video vertical (puedes reusar el volante o el video "Invitación oficial").
-- Texto principal: `🎃 ¡Halloween llega a Presas! Regístrate, sigue a Tekton, Bacru y Papelería Eupalinos y participa por una Amazon Alexa. Ven a la Casa Embrujada el 30, 31 de oct y 1 de nov de 6 a 9 pm por dulces y palomitas gratis. Sorteo: 2 de noviembre, 5 pm.`
+- Texto principal: `🎃 ¡Halloween llega a Presas! Regístrate, sigue a Tekton, Bacru y Papelería Eupalinos y participa por una Amazon Alexa. Ven a la Casa Embrujada el 30, 31 de oct y 1 de nov de 6 a 9 pm por dulces y palomitas gratis. Sorteo EN VIVO por Google Meet: 2 de noviembre, 5 pm (link en el grupo de WhatsApp de Papelería Eupalinos).`
 - Título: `Gana una Amazon Alexa`
 - Botón: **Registrarte**
 - En las bases o el texto incluye: `Promoción no patrocinada ni administrada por Meta. Bases en casa-embrujada-presas.vercel.app/bases`

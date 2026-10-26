@@ -6,7 +6,7 @@
 <title>Casa Embrujada · Gana una Amazon Alexa</title>
 <meta name="description" content="Sigue a Tekton, Bacru y Papelería Eupalinos y participa por una Amazon Alexa. Casa Embrujada en Av. Juárez, Presas, Tezontepec de Aldama.">
 <meta property="og:title" content="¡Gana una Amazon Alexa en la Casa Embrujada!">
-<meta property="og:description" content="Sigue a Tekton, Bacru y Eupalinos y ya estás participando. 30 y 31 de octubre y 1 de noviembre, 6 a 9 pm.">
+<meta property="og:description" content="Sigue a Tekton, Bacru y Eupalinos y ya estás participando. Sorteo en vivo por Google Meet el 2 de noviembre, 5 pm.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#2b1747">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,9 +89,9 @@ footer a{color:var(--mist)}
   <section class="done-card" id="done" hidden aria-live="polite">
     <h2>¡Ya estás participando!</h2>
     <p>Si te registraste en el formulario del anuncio, ya tienes <b>1 boleto</b> para la Alexa.</p>
-    <p class="tip" style="color:inherit">¿Llegaste por el volante o por otro lado? Regístrate aquí:</p>
-    <a class="wa" id="wa" href="#" target="_blank" rel="noopener">Registrarme por WhatsApp</a>
-    <p class="tip" style="color:inherit">Anunciamos al ganador el <b>2 de noviembre a las 5:00 pm</b> por WhatsApp y en nuestras redes.</p>
+    <p><b>Sorteo EN VIVO por Google Meet</b><br>2 de noviembre, 5:00 pm · ganador y 3 suplentes</p>
+    <p class="tip" style="color:inherit">Únete al grupo de WhatsApp de Papelería Eupalinos: ahí mandamos el link del live. Si llegaste por el volante, ahí mismo quedas registrado.</p>
+    <a class="wa" id="wa" href="#" target="_blank" rel="noopener">Unirme al grupo de WhatsApp</a>
   </section>
 
   <section class="event">
@@ -104,6 +104,7 @@ footer a{color:var(--mist)}
       <li><b>30 y 31 de octubre y 1 de noviembre</b>, de 6:00 a 9:00 pm</li>
       <li>Av. Juárez, Presas, Tezontepec de Aldama, al lado de Afinet, cerca de Ferretodito · <a href="https://www.google.com/maps/search/?api=1&query=Afinet+Presas+Tezontepec+de+Aldama+Hidalgo" target="_blank" rel="noopener">Ver mapa</a></li>
       <li>Dulces y palomitas gratis para los niños 🎃</li>
+      <li><b>Sorteo en vivo por Google Meet: 2 de noviembre, 5:00 pm.</b> El link llega por el grupo de WhatsApp de Papelería Eupalinos (773 680 1410).</li>
     </ul>
   </section>
 
@@ -115,6 +116,8 @@ footer a{color:var(--mist)}
 </main>
 
 <script>
+// Link de invitación del grupo de WhatsApp (https://chat.whatsapp.com/...). Vacío = abre el chat de Eupalinos.
+const WA_GRUPO="";
 const BRANDS=[
   {id:"tekton",name:"Tekton Arquitectos",short:"Tekton",logo:"T",cls:"l-tekton",
     instagram:{handle:"@tektonarquitectos",url:"https://www.instagram.com/tektonarquitectos/"},
@@ -150,8 +153,8 @@ function render(){
   document.getElementById("hint").textContent=n===3?"¡Completo!":platform==="instagram"?"En Instagram":"En Facebook";
   document.getElementById("bar").style.width=(n/3*100)+"%";
   document.getElementById("done").hidden=n<3;
-  const msg=`Hola, quiero participar en el sorteo de la Alexa de la Casa Embrujada. Ya sigo a Tekton, Bacru y Eupalinos en ${platform==="instagram"?"Instagram":"Facebook"}. Mi nombre es: ___ y mi usuario es: ___`;
-  document.getElementById("wa").href="https://wa.me/527736801410?text="+encodeURIComponent(msg);
+  const msg=`Hola, quiero unirme al grupo del sorteo en vivo de la Casa Embrujada. Ya sigo a Tekton, Bacru y Eupalinos en ${platform==="instagram"?"Instagram":"Facebook"}. Mi nombre es: ___ y mi usuario es: ___`;
+  document.getElementById("wa").href=WA_GRUPO||"https://wa.me/527736801410?text="+encodeURIComponent(msg);
   document.getElementById("tip").hidden=n===3;
 }
 document.querySelector(".platform").addEventListener("click",e=>{
