@@ -4,7 +4,7 @@ Flujo completo:
 
 1. La persona ve el anuncio en Facebook o Instagram y toca **Participar**.
 2. Se abre el **formulario instantáneo** de Meta. El nombre y el teléfono ya vienen llenos; contesta 2 preguntas y toca **Enviar**.
-3. En la pantalla final toca **Seguir a las 3 marcas** y se abre la landing (`https://TU-DOMINIO.vercel.app`).
+3. En la pantalla final toca **Seguir a las 3 marcas** y se abre la landing (`https://casa-embrujada-presas.vercel.app`).
 4. En la landing toca **Seguir** en Tekton, Bacru y Eupalinos. La plataforma (Instagram o Facebook) se detecta sola.
 5. Cada día o al final, descarga los registros de Meta en CSV y súbelos a la página de puntos (pestaña Ajustes → Importar registros del formulario de Meta).
 
@@ -47,12 +47,12 @@ Flujo completo:
 
 **Política de privacidad**
 - Texto del enlace: `Aviso de privacidad`
-- URL: `https://TU-DOMINIO.vercel.app/privacidad`
+- URL: `https://casa-embrujada-presas.vercel.app/privacidad`
 
 **Pantalla de finalización**
 - Título: `¡Último paso!`
 - Descripción: `Sigue a Tekton, Bacru y Eupalinos en Instagram o Facebook para activar tu boleto.`
-- Botón: **Visitar sitio web**, texto `Seguir a las 3 marcas`, URL `https://TU-DOMINIO.vercel.app`
+- Botón: **Visitar sitio web**, texto `Seguir a las 3 marcas`, URL `https://casa-embrujada-presas.vercel.app`
 
 > No cambies el texto de las preguntas 3 y 4: la página de puntos reconoce las columnas por palabras como "usuario" e "interesa".
 
@@ -62,7 +62,7 @@ Flujo completo:
 - Texto principal: `🎃 ¡Halloween llega a Presas! Regístrate, sigue a Tekton, Bacru y Papelería Eupalinos y participa por una Amazon Alexa. Ven a la Casa Embrujada el 30, 31 de oct y 1 de nov de 6 a 9 pm por dulces y palomitas gratis. Sorteo: 2 de noviembre, 5 pm.`
 - Título: `Gana una Amazon Alexa`
 - Botón: **Registrarte**
-- En las bases o el texto incluye: `Promoción no patrocinada ni administrada por Meta. Bases en TU-DOMINIO.vercel.app/bases`
+- En las bases o el texto incluye: `Promoción no patrocinada ni administrada por Meta. Bases en casa-embrujada-presas.vercel.app/bases`
 
 ## 5. Descargar los registros
 
