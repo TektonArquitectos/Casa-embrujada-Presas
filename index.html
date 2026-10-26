@@ -145,9 +145,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
         <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5H16.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H7.9v3h2.6V21h3z"/></svg>
         Facebook</button>
     </div>
-    <label for="usuario"><span id="usuario-lbl">Tu usuario de Instagram</span>
-      <input type="text" id="usuario" autocomplete="off" autocapitalize="off" maxlength="80" placeholder="@tu_usuario"></label>
-    <p class="muted">Con este usuario revisamos que sí sigas a las 3 marcas.</p>
     <button type="button" class="btn" id="continuar">Continuar</button>
   </section>
 
@@ -229,14 +226,14 @@ const saved=store.get("ce_v2")||{};
 const S={
   platform:qp==="fb"||qp==="facebook"?"facebook":qp==="ig"||qp==="instagram"?"instagram"
     :saved.platform||(/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?"facebook":"instagram"),
-  nombre:saved.nombre||"",telefono:saved.telefono||"",usuario:saved.usuario||"",datosOk:!!saved.datosOk&&!!saved.telefono,
+  nombre:saved.nombre||"",telefono:saved.telefono||"",datosOk:!!saved.datosOk&&!!saved.telefono,
   // estado por plataforma y marca: "" | "abierto" | "sigue"
   st:saved.st||{instagram:{},facebook:{}},whatsapp:!!saved.whatsapp,
   // true en cuanto le dan play al video; desbloquea el paso 1
   video:!!saved.video
 };
 let pendiente=null; // {id, t}
-const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,usuario:S.usuario,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
+const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
 
 // Confeti en canvas, sin librerías. fuerza: 1 = acción normal, 2 = logro grande.
 const confeti=(()=>{
@@ -274,7 +271,7 @@ const confeti=(()=>{
 function registrar(siguio){
   if(!S.telefono)return;
   fetch("/api/registro",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,
-    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,usuario:S.usuario,siguio})}).catch(()=>{});
+    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,siguio})}).catch(()=>{});
 }
 const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
@@ -283,13 +280,11 @@ const seguidas=()=>BRANDS.filter(b=>estado(b.id)==="sigue").length;
 
 function render(){
   document.querySelectorAll(".platform button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===S.platform)));
-  $("usuario-lbl").textContent=S.platform==="instagram"?"Tu usuario de Instagram":"Tu nombre como aparece en Facebook";
-  $("usuario").placeholder=S.platform==="instagram"?"@tu_usuario":"Nombre en Facebook";
   const n=seguidas(),p2=S.datosOk,p3=p2&&n===3;
   $("paso1").className="card "+(!S.video?"locked":p2?"complete":"active");
   $("candado").hidden=S.video;
   $("paso1").setAttribute("aria-disabled",String(!S.video));
-  ["nombre","telefono","usuario","continuar"].forEach(id=>$(id).disabled=!S.video);
+  ["nombre","telefono","continuar"].forEach(id=>$(id).disabled=!S.video);
   document.querySelectorAll(".platform button").forEach(b=>b.disabled=!S.video);
   $("video-box").classList.toggle("visto",S.video);
   $("video-nota").textContent=S.video?"✓ ¡Listo! Ya puedes registrarte abajo.":"👆 Primero dale play al video. No tienes que verlo completo.";
@@ -315,12 +310,11 @@ document.querySelector(".platform").addEventListener("click",e=>{
   const b=e.target.closest("button[data-p]");if(!b)return;S.platform=b.dataset.p;save();render();
 });
 $("continuar").addEventListener("click",()=>{
-  const nombre=$("nombre").value.trim(),usuario=$("usuario").value.trim(),telefono=$("telefono").value.replace(/\D/g,"").slice(-10);
-  ["nombre","telefono","usuario"].forEach(id=>$(id).removeAttribute("aria-invalid"));
+  const nombre=$("nombre").value.trim(),telefono=$("telefono").value.replace(/\D/g,"").slice(-10);
+  ["nombre","telefono"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   if(nombre.length<3){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
   if(telefono.length!==10){$("telefono").focus();$("telefono").setAttribute("aria-invalid","true");return}
-  if(usuario.length<2){$("usuario").focus();$("usuario").setAttribute("aria-invalid","true");return}
-  S.nombre=nombre;S.telefono=telefono;S.usuario=usuario;S.datosOk=true;save();render();
+  S.nombre=nombre;S.telefono=telefono;S.datosOk=true;save();render();
   registrar(seguidas()===3);
   confeti(1,$("continuar"));
   $("paso2").scrollIntoView({behavior:"smooth",block:"start"});
@@ -369,7 +363,7 @@ document.addEventListener("visibilitychange",()=>{
   if(document.hidden){ocultoDesde=Date.now();return}
   if(pendiente&&Date.now()-ocultoDesde>=MIN_FUERA_MS)marcarAbierto(pendiente.id);
 });
-$("nombre").value=S.nombre;$("telefono").value=S.telefono;$("usuario").value=S.usuario;
+$("nombre").value=S.nombre;$("telefono").value=S.telefono;
 render();
 </script>
 </body>
