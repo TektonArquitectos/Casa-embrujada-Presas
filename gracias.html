@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>¡Ya estás dentro! · Casa Embrujada</title>
+<meta name="description" content="Tu boleto para el sorteo de la Amazon Alexa de la Casa Embrujada ya está registrado.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2b1747">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@500;700;900&display=swap">
+<style>
+:root{
+  --night:#2b1747; --night-2:#3b2163; --night-3:#4c2c7d; --pumpkin:#ff7a1a; --pumpkin-2:#ffa24d;
+  --bone:#fff8ee; --mist:#cdbfe6; --ok:#3ddc84; --wa:#25d366;
+  --f-display:"Luckiest Guy","Arial Black",Impact,sans-serif; --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:radial-gradient(120% 60% at 50% 0%,var(--night-3),var(--night) 70%);color:var(--bone);font-family:var(--f-body);font-size:17px;line-height:1.45;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+main{max-width:460px;margin:0 auto;display:grid;gap:18px;padding-top:26px}
+.eyebrow{font-weight:900;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pumpkin-2);text-align:center}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(2.1rem,10vw,2.9rem);line-height:.98;margin:0;text-align:center;text-wrap:balance;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.35)}
+h1 em{font-style:normal;color:var(--pumpkin)}
+.lead{text-align:center;color:var(--mist);margin:0;text-wrap:pretty}
+.lead b{color:var(--bone)}
+.muted{color:var(--mist);font-size:.92rem}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:14px 16px;font:900 1rem var(--f-body);text-align:center;text-decoration:none;cursor:pointer;background:var(--pumpkin);color:#2a1300}
+.btn.wa{background:var(--wa);color:#05351a}
+.btn.ghost{background:transparent;color:var(--bone);border:2px solid var(--mist)}
+
+/* Boleto */
+.boleto{position:relative;display:grid;grid-template-columns:1fr auto;border-radius:20px;background:var(--bone);color:var(--night);overflow:hidden;
+  box-shadow:0 10px 0 rgba(0,0,0,.28);animation:entra .7s cubic-bezier(.2,.9,.3,1.3) both}
+.boleto .izq{padding:18px 16px;display:grid;gap:6px;min-width:0}
+.boleto .tipo{font-weight:900;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pumpkin)}
+.boleto .quien{font-family:var(--f-display);font-size:1.6rem;line-height:1;color:var(--night-3);overflow-wrap:anywhere}
+.boleto .premio{font-weight:800;font-size:.95rem}
+.boleto .cuando{font-size:.85rem;color:#5b4a75}
+.boleto .der{position:relative;display:grid;place-items:center;padding:12px 16px;border-left:3px dashed rgba(43,23,71,.3);background:var(--pumpkin);color:#2a1300;text-align:center}
+.boleto .der span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--f-display);font-size:1.25rem;letter-spacing:.06em}
+.boleto .der::before,.boleto .der::after{content:"";position:absolute;left:-12.5px;width:22px;height:22px;border-radius:50%;background:var(--night-3)}
+.boleto .der::before{top:-11px}.boleto .der::after{bottom:-11px}
+.sello{justify-self:start;margin-top:4px;padding:4px 10px;border-radius:999px;background:rgba(61,220,132,.18);color:#11733d;font-weight:900;font-size:.8rem}
+
+/* Cuenta regresiva */
+.cuenta{display:grid;gap:10px;padding:16px;border-radius:18px;background:var(--night-2);text-align:center}
+.cuenta h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;color:var(--pumpkin-2)}
+.reloj{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.reloj div{padding:10px 4px;border-radius:14px;background:rgba(0,0,0,.25)}
+.reloj b{display:block;font-family:var(--f-display);font-weight:400;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.reloj small{font-weight:800;font-size:.75rem;color:var(--mist);text-transform:uppercase;letter-spacing:.08em}
+
+.bloque{display:grid;gap:10px;padding:16px;border-radius:18px;background:rgba(0,0,0,.22)}
+.bloque h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;color:var(--pumpkin-2)}
+.bloque p{margin:0}
+.oport{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.oport span{display:grid;place-items:center;gap:2px;padding:10px 2px;border-radius:12px;background:rgba(255,255,255,.06);font-size:.72rem;font-weight:800;color:var(--mist);text-align:center}
+.oport span b{font-size:1.4rem;line-height:1}
+.oport span:first-child{background:rgba(255,122,26,.18);color:var(--bone)}
+.points{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:baseline;font-size:.95rem}
+.points > b{font-family:var(--f-display);font-weight:400;color:var(--pumpkin);font-size:1.25rem}
+.bloque ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
+
+.gracias{text-align:center;display:grid;gap:6px;padding:4px 8px}
+.gracias p{margin:0}
+footer{font-size:.75rem;color:var(--mist);text-align:center;display:grid;gap:6px;opacity:.9}
+footer a{color:var(--mist)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-offset:3px}
+#confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+[hidden]{display:none!important}
+@keyframes entra{from{opacity:0;transform:translateY(18px) rotate(-2deg) scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.boleto{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Casa Embrujada · Presas, Tezontepec</div>
+  <h1 id="titulo">¡Ya estás <em>dentro</em>!</h1>
+  <p class="lead">Tu boleto ya está en la tómbola para la <b>Amazon Alexa</b>. Gracias por sumarte, de verdad nos emociona tenerte. 🧡</p>
+
+  <div class="boleto" role="img" aria-label="Tu boleto para el sorteo de la Amazon Alexa">
+    <div class="izq">
+      <span class="tipo">Boleto oficial</span>
+      <span class="quien" id="quien">¡Este es tu boleto!</span>
+      <span class="premio">🎁 Amazon Alexa</span>
+      <span class="cuando">Sorteo en vivo · 2 de noviembre, 5:00 pm</span>
+      <span class="sello">✓ Registrado</span>
+    </div>
+    <div class="der"><span>¡Suerte!</span></div>
+  </div>
+
+  <section class="cuenta" aria-live="polite">
+    <h2 id="cuenta-titulo">Faltan para el sorteo</h2>
+    <div class="reloj" id="reloj">
+      <div><b id="d">–</b><small>días</small></div>
+      <div><b id="h">–</b><small>horas</small></div>
+      <div><b id="m">–</b><small>min</small></div>
+    </div>
+    <p class="muted" id="cuenta-nota">Es por Google Meet y el link llega al grupo de WhatsApp. ¡Conéctate, tu nombre puede salir!</p>
+  </section>
+
+  <section class="bloque">
+    <h2>Sí puedes ganar</h2>
+    <p>El sorteo es <b>en vivo y al azar</b>, frente a todos. Basta <b>un solo boleto</b> para ganar, y se sacan <b>4 nombres</b>: si el ganador no responde, pasa al siguiente.</p>
+    <div class="oport" aria-label="1 ganador y 3 suplentes">
+      <span><b>🏆</b>Ganador</span><span><b>1</b>Suplente</span><span><b>2</b>Suplente</span><span><b>3</b>Suplente</span>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h2>Junta más boletos</h2>
+    <p class="muted">Cada boleto extra es una oportunidad más de que digan tu nombre.</p>
+    <div class="points">
+      <b>+2</b><span>Ven a la Casa Embrujada, tómate una foto y publícala con <b>#tektonhalloween</b>, <b>#bacruhalloween</b> o <b>#eupalinoshalloween</b>. Cuenta cada día que vengas.</span>
+      <b>+3</b><span>Recomienda a alguien que quiera construir (Tekton) o vender su casa o terreno (Bacru).</span>
+    </div>
+    <ul>
+      <li><b>30 y 31 de octubre y 1 de noviembre</b>, de 6:00 a 9:00 pm</li>
+      <li>Av. Juárez, Presas, al lado de Affinet (la casa azul)</li>
+      <li>Dulces y palomitas gratis para los niños 🎃</li>
+    </ul>
+    <a class="btn" href="https://maps.app.goo.gl/YA1D4D8qnYke9V8o7" target="_blank" rel="noopener" id="como-llegar">Cómo llegar</a>
+  </section>
+
+  <section class="bloque">
+    <h2>Invita a tu familia</h2>
+    <p class="muted">Que también vengan a la Casa Embrujada y prueben su suerte.</p>
+    <a class="btn wa" id="compartir" target="_blank" rel="noopener" href="#">Compartir por WhatsApp</a>
+  </section>
+
+  <div class="gracias">
+    <p><b>Gracias por apoyar a los negocios de Presas.</b></p>
+    <p class="muted">Tekton Arquitectos · Bacru Inmobiliaria · Papelería Eupalinos</p>
+  </div>
+
+  <a class="btn ghost" href="https://chat.whatsapp.com/EUqE92Ywca77TWtcuhX9Kx" target="_blank" rel="noopener">¿No se abrió el grupo? Entra aquí</a>
+
+  <footer>
+    <span><a href="/">Volver a la página del sorteo</a> · <a href="/bases">Bases del sorteo</a> · <a href="/privacidad">Aviso de privacidad</a></span>
+    <span>Esta promoción no está patrocinada, avalada ni administrada por Instagram, Facebook o Meta.</span>
+  </footer>
+</main>
+
+<script>
+// Sorteo: 2 de noviembre de 2026, 5:00 pm hora del centro de México (UTC-6).
+const SORTEO=new Date("2026-11-02T17:00:00-06:00").getTime();
+const URL_SORTEO="https://casa-embrujada-presas.vercel.app/";
+const $=id=>document.getElementById(id);
+
+let nombre="";
+try{nombre=((JSON.parse(localStorage.getItem("ce_v2"))||{}).nombre||"").trim()}catch(e){}
+const primero=nombre.split(/\s+/)[0]||"";
+if(primero){
+  $("titulo").innerHTML="¡Ya estás <em>dentro</em>, "+primero.replace(/[<>&"]/g,"")+"!";
+  $("quien").textContent=nombre;
+}
+
+function tic(){
+  const falta=SORTEO-Date.now();
+  if(falta<=0){
+    const pasado=falta<-3*3600e3;
+    $("cuenta-titulo").textContent=pasado?"El sorteo ya se realizó":"¡El sorteo es hoy!";
+    $("reloj").hidden=true;
+    $("cuenta-nota").textContent=pasado?"Revisa el grupo de WhatsApp para ver los resultados. ¡Gracias por participar!":"Entra al grupo de WhatsApp: ahí está el link de Google Meet.";
+    return false;
+  }
+  $("d").textContent=Math.floor(falta/864e5);
+  $("h").textContent=Math.floor(falta%864e5/36e5);
+  $("m").textContent=Math.floor(falta%36e5/6e4);
+  return true;
+}
+if(tic())setInterval(tic,30000);
+
+const texto="¡Ya estoy participando por una Amazon Alexa en la Casa Embrujada de Presas! 🎃 Regístrate gratis en 1 minuto: "+URL_SORTEO;
+$("compartir").href="https://wa.me/?text="+encodeURIComponent(texto);
+
+// Confeti en canvas, sin librerías (mismo que la landing).
+const confeti=(()=>{
+  const COLORES=["#ff7a1a","#ffa24d","#fff8ee","#3ddc84","#a374ff","#ffd23f"];
+  const quieto=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cv,ctx,piezas=[],corriendo=false;
+  function cuadro(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    piezas=piezas.filter(p=>p.y<cv.height+40&&p.vida>0);
+    for(const p of piezas){
+      p.vx*=.985;p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vida--;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;
+      if(p.redondo){ctx.beginPath();ctx.arc(0,0,p.t/2,0,Math.PI*2);ctx.fill()}else ctx.fillRect(-p.t/2,-p.t/4,p.t,p.t/2);
+      ctx.restore();
+    }
+    if(piezas.length)requestAnimationFrame(cuadro);else{corriendo=false;ctx.clearRect(0,0,cv.width,cv.height)}
+  }
+  return function(fuerza=1,origen){
+    if(quieto)return;
+    if(!cv){cv=document.createElement("canvas");cv.id="confeti";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);ctx=cv.getContext("2d")}
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
+    let ox=innerWidth/2,oy=innerHeight*.35;
+    if(origen&&origen.getBoundingClientRect){const r=origen.getBoundingClientRect();ox=r.left+r.width/2;oy=Math.min(Math.max(r.top+r.height/2,40),innerHeight-40)}
+    const n=fuerza>1?160:70;
+    for(let i=0;i<n;i++){
+      const ang=-Math.PI/2+(Math.random()-.5)*(fuerza>1?2.4:1.6),vel=(fuerza>1?11:8)+Math.random()*7;
+      piezas.push({x:ox*dpr,y:oy*dpr,vx:Math.cos(ang)*vel*dpr,vy:Math.sin(ang)*vel*dpr,rot:Math.random()*6,vr:(Math.random()-.5)*.4,
+        t:(6+Math.random()*7)*dpr,color:COLORES[i%COLORES.length],redondo:Math.random()<.3,vida:160+Math.random()*60});
+    }
+    if(!corriendo){corriendo=true;requestAnimationFrame(cuadro)}
+  };
+})();
+// Celebración al llegar, y otra cuando regresan de WhatsApp a esta pestaña.
+setTimeout(()=>confeti(2),350);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)confeti(1)});
+document.addEventListener("click",e=>{const a=e.target.closest("#compartir,#como-llegar");if(a)confeti(1,a)});
+try{if(window.fbq)fbq("trackCustom","Gracias")}catch(e){}
+</script>
+</body>
+</html>

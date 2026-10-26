@@ -168,6 +168,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
     <h2>¡Listo!</h2>
     <p>Quédate en el grupo: ahí llega el link del sorteo en vivo del 2 de noviembre a las 5:00 pm.</p>
     <p class="muted" style="color:inherit">Si no pudiste entrar al grupo, escríbenos al 773 680 1410.</p>
+    <a class="btn" href="/gracias">Ver mi boleto</a>
   </section>
 
   <section class="event">
@@ -337,7 +338,8 @@ document.addEventListener("click",e=>{
     else confeti(1,fila);
     return;
   }
-  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600)}
+  // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
+  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600);setTimeout(()=>location.assign("/gracias"),1500)}
   if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
 });
 // Si intentan registrarse sin darle play, se sacude el video y los regresamos a él.
