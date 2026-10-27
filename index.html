@@ -62,11 +62,6 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .follow .what{font-size:.85rem;color:var(--mist);overflow-wrap:anywhere}
 .follow .cta{font-weight:900;font-size:.9rem;padding:10px 14px;border-radius:999px;background:var(--pumpkin);color:#2a1300;white-space:nowrap;text-decoration:none}
 .follow.done .cta{background:var(--ok);color:#06210f}
-.follow .ask{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.follow .ask p{grid-column:1/-1;font-weight:800;font-size:.92rem}
-.follow .ask button{border:0;border-radius:12px;padding:10px;font:900 .9rem var(--f-body);cursor:pointer}
-.follow .ask .yes{background:var(--ok);color:#06210f}
-.follow .ask .again{background:transparent;color:var(--bone);border:2px solid var(--mist)}
 .l-tekton{background:#2f9e44}.l-bacru{background:#111;color:#e8c35a!important;border:1px solid #e8c35a}.l-eupa{background:#111;border:1px solid #c9a24a}
 .alert{padding:12px 14px;border-radius:14px;background:var(--alert);color:#2b1a00;font-weight:800;font-size:.95rem}
 .shot{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:var(--mist)}
@@ -151,7 +146,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
   <!-- Paso 2 -->
   <section class="card locked" id="paso2" aria-disabled="true">
     <h2><small>Paso 2 de 3</small>Sigue a las 3 marcas</h2>
-    <p class="shot"><span aria-hidden="true">👆</span><span>Se abre el perfil: toca <b>Seguir</b> y regresa aquí para confirmar. Al ganador le revisamos en vivo que siga a las 3.</span></p>
+    <p class="shot"><span aria-hidden="true">👆</span><span>Toca <b>Seguir</b> en cada marca: se abre su perfil para que le des Seguir y aquí queda lista. Al ganador le revisamos en vivo que siga a las 3.</span></p>
     <div class="follows" id="follows"></div>
   </section>
 
@@ -218,8 +213,6 @@ const BRANDS=[
     instagram:{handle:"@eupalinos_papeleria",url:"https://www.instagram.com/eupalinos_papeleria/"},
     facebook:{handle:"Eupalinos Papelería",url:"https://www.facebook.com/profile.php?id=61568860220463"}}
 ];
-// Tiempo mínimo fuera de la página para dar por abierto el perfil.
-const MIN_FUERA_MS=2500;
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const ua=navigator.userAgent||"";
 const qp=new URLSearchParams(location.search).get("p");
@@ -228,12 +221,11 @@ const S={
   platform:qp==="fb"||qp==="facebook"?"facebook":qp==="ig"||qp==="instagram"?"instagram"
     :saved.platform||(/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?"facebook":"instagram"),
   nombre:saved.nombre||"",telefono:saved.telefono||"",datosOk:!!saved.datosOk&&!!saved.telefono,
-  // estado por plataforma y marca: "" | "abierto" | "sigue"
+  // estado por plataforma y marca: "" | "sigue"
   st:saved.st||{instagram:{},facebook:{}},whatsapp:!!saved.whatsapp,
   // true en cuanto le dan play al video; desbloquea el paso 1
   video:!!saved.video
 };
-let pendiente=null; // {id, t}
 const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
 
 // Confeti en canvas, sin librerías. fuerza: 1 = acción normal, 2 = logro grande.
@@ -298,11 +290,10 @@ function render(){
   const next=(BRANDS.find(b=>estado(b.id)!=="sigue")||{}).id;
   $("follows").innerHTML=BRANDS.map(b=>{
     const acc=b[S.platform],e=estado(b.id);
-    const ask=e==="abierto"?`<div class="ask"><p>¿Ya le diste Seguir?</p><button type="button" class="yes" data-yes="${b.id}">Sí, ya la sigo</button><button type="button" class="again" data-open="${b.id}">Abrir otra vez</button></div>`:"";
     return `<div class="follow ${e==="sigue"?"done":b.id===next&&p2?"next":""}">
       <div class="row"><span class="logo ${b.cls}" aria-hidden="true">${b.logo}</span>
       <span class="txt"><span class="brand">${b.name}</span><br><span class="what">${acc.handle}</span></span>
-      ${e==="sigue"?`<span class="cta">✓ Listo</span>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">${e==="abierto"?"Abrir":"Seguir"}</a>`}</div>${ask}</div>`}).join("");
+      ${e==="sigue"?`<a class="cta" href="${acc.url}" target="_blank" rel="noopener">✓ Listo</a>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">Seguir</a>`}</div></div>`}).join("");
   $("wa").href=WA_GRUPO;
   $("done").hidden=!S.whatsapp;
 }
@@ -324,18 +315,15 @@ document.addEventListener("click",e=>{
   const open=e.target.closest("[data-open]");
   if(open){
     if(!S.datosOk){e.preventDefault();$("nombre").focus();return}
-    const id=open.dataset.open,b=BRANDS.find(x=>x.id===id);
-    if(open.tagName!=="A"){window.open(b[S.platform].url,"_blank","noopener")}
-    pendiente={id,t:Date.now()};track("AbrioPerfil",{marca:id,plataforma:S.platform});
-    // Si el navegador no avisa que salimos de la página, igual pedimos confirmación después de un rato.
-    setTimeout(()=>{if(pendiente&&pendiente.id===id&&!document.hidden){marcarAbierto(id)}},8000);
-    return;
-  }
-  const yes=e.target.closest("[data-yes]");
-  if(yes){const id=yes.dataset.yes,fila=yes.closest(".follow");S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
+    // Con tocar Seguir ya cuenta: se abre el perfil y la marca queda lista, sin pedir confirmación.
+    const id=open.dataset.open,fila=open.closest(".follow");
     track("SigueMarca",{marca:id,plataforma:S.platform});
-    if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
-    else confeti(1,fila);
+    confeti(1,fila);
+    // Se espera un momento para que el enlace termine de abrir el perfil antes de redibujar la lista.
+    setTimeout(()=>{
+      S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
+      if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
+    },300);
     return;
   }
   // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
@@ -359,12 +347,6 @@ function desbloquear(){
 }
 $("play").addEventListener("click",()=>{const p=video.play();if(p&&p.catch)p.catch(()=>desbloquear())});
 video.addEventListener("play",desbloquear);
-function marcarAbierto(id){if(estado(id)==="sigue")return;S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"abierto"};pendiente=null;save();render()}
-let ocultoDesde=0;
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){ocultoDesde=Date.now();return}
-  if(pendiente&&Date.now()-ocultoDesde>=MIN_FUERA_MS)marcarAbierto(pendiente.id);
-});
 $("nombre").value=S.nombre;$("telefono").value=S.telefono;
 render();
 </script>
