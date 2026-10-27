@@ -201,7 +201,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 
 <script>
 // Link de invitación del grupo de WhatsApp (paso 3).
-const WA_GRUPO="https://chat.whatsapp.com/EUqE92Ywca77TWtcuhX9Kx";
+const WA_GRUPO="https://chat.whatsapp.com/EUqE92Ywca77TWtcuhX9Kx?s=sh&p=a&mlu=4&ilr=4&iam=2";
 const BRANDS=[
   {id:"tekton",name:"Tekton Arquitectos",logo:"T",cls:"l-tekton",
     instagram:{handle:"@tektonarquitectos",url:"https://www.instagram.com/tektonarquitectos/"},
@@ -355,7 +355,7 @@ document.addEventListener("click",e=>{
     if(MOVIL){e.preventDefault();
       const web=setTimeout(()=>{if(!document.hidden)window.open(WA_GRUPO,"_blank","noopener")},1500);
       document.addEventListener("visibilitychange",()=>{if(document.hidden)clearTimeout(web)},{once:true});
-      abrirApp("whatsapp://chat?code="+WA_GRUPO.split("/").pop());
+      abrirApp("whatsapp://chat?code="+new URL(WA_GRUPO).pathname.slice(1));
     }
     setTimeout(()=>location.assign("/gracias"),MOVIL?2500:1500)}
   if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
