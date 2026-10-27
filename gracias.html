@@ -49,9 +49,12 @@ h1 em{font-style:normal;color:var(--pumpkin)}
 /* Cuenta regresiva */
 .cuenta{display:grid;gap:10px;padding:16px;border-radius:18px;background:var(--night-2);text-align:center}
 .cuenta h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;color:var(--pumpkin-2)}
-.reloj{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .reloj div{padding:10px 4px;border-radius:14px;background:rgba(0,0,0,.25)}
+.reloj .seg{background:rgba(255,122,26,.2)}
 .reloj b{display:block;font-family:var(--f-display);font-weight:400;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.reloj b.cambia{animation:cae .35s ease-out}
+@keyframes cae{from{transform:translateY(-35%);opacity:.2}to{transform:none;opacity:1}}
 .reloj small{font-weight:800;font-size:.75rem;color:var(--mist);text-transform:uppercase;letter-spacing:.08em}
 
 .bloque{display:grid;gap:10px;padding:16px;border-radius:18px;background:rgba(0,0,0,.22)}
@@ -81,7 +84,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
 #confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 [hidden]{display:none!important}
 @keyframes entra{from{opacity:0;transform:translateY(18px) rotate(-2deg) scale(.96)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.boleto,.familia span{animation:none}}
+@media (prefers-reduced-motion:reduce){.boleto,.familia span,.reloj b.cambia{animation:none}}
 </style>
 </head>
 <body>
@@ -114,6 +117,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
       <div><b id="d">–</b><small>días</small></div>
       <div><b id="h">–</b><small>horas</small></div>
       <div><b id="m">–</b><small>min</small></div>
+      <div class="seg"><b id="s">–</b><small>seg</small></div>
     </div>
     <p class="muted" id="cuenta-nota">Es por Google Meet y el link llega al grupo de WhatsApp. ¡Conéctate, tu nombre puede salir!</p>
   </section>
@@ -177,12 +181,21 @@ function tic(){
     $("cuenta-nota").textContent=pasado?"Revisa el grupo de WhatsApp para ver los resultados. ¡Gracias por participar!":"Entra al grupo de WhatsApp: ahí está el link de Google Meet.";
     return false;
   }
-  $("d").textContent=Math.floor(falta/864e5);
-  $("h").textContent=Math.floor(falta%864e5/36e5);
-  $("m").textContent=Math.floor(falta%36e5/6e4);
+  const dos=n=>String(n).padStart(2,"0");
+  pon("d",Math.floor(falta/864e5));
+  pon("h",dos(Math.floor(falta%864e5/36e5)));
+  pon("m",dos(Math.floor(falta%36e5/6e4)));
+  pon("s",dos(Math.floor(falta%6e4/1e3)));
   return true;
 }
-if(tic())setInterval(tic,30000);
+// Solo anima el número que cambió.
+function pon(id,v){
+  const el=$(id),t=String(v);
+  if(el.textContent===t)return;
+  el.textContent=t;el.classList.remove("cambia");void el.offsetWidth;el.classList.add("cambia");
+}
+// Se alinea al cambio de segundo para que no brinque.
+if(tic())setTimeout(()=>{const id=setInterval(()=>{if(!tic())clearInterval(id)},1000);tic()},1000-Date.now()%1000);
 
 const texto="¡Ya estoy participando por una Amazon Alexa en la Casa Embrujada de Presas! 🎃 Regístrate tú también con tu WhatsApp: entre más de la familia nos apuntemos, más oportunidades de que se quede en casa. Es gratis y toma 1 minuto: "+URL_SORTEO;
 $("compartir").href="https://wa.me/?text="+encodeURIComponent(texto);
