@@ -270,6 +270,25 @@ const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
 const estado=id=>(S.st[S.platform]||{})[id]||"";
 const seguidas=()=>BRANDS.filter(b=>estado(b.id)==="sigue").length;
+// En el celular el perfil se abre en la app de Instagram o Facebook, donde ya tienen la sesión iniciada.
+// Abrir el enlace web dentro del navegador de la app les pedía iniciar sesión otra vez.
+const MOVIL=/Android|iPhone|iPad|iPod/i.test(ua);
+function linkApp(acc){
+  if(S.platform==="instagram")return "instagram://user?username="+acc.handle.replace(/^@/,"");
+  return "fb://facewebmodal/f?href="+encodeURIComponent(acc.url);
+}
+function abrirApp(url){location.href=url}
+// Si estamos dentro de la app de destino, la app está instalada seguro. Si no, y en 1.5 s la página
+// sigue visible, la app no se abrió (no está instalada): se abre la versión web.
+function abrirPerfil(id){
+  const acc=BRANDS.find(x=>x.id===id)[S.platform];
+  const enLaApp=S.platform==="instagram"?/Instagram/i.test(ua):/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua);
+  if(!enLaApp){
+    const web=setTimeout(()=>{if(!document.hidden)window.open(acc.url,"_blank","noopener")},1500);
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)clearTimeout(web)},{once:true});
+  }
+  abrirApp(linkApp(acc));
+}
 
 function render(){
   document.querySelectorAll(".platform button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===S.platform)));
@@ -293,7 +312,7 @@ function render(){
     return `<div class="follow ${e==="sigue"?"done":b.id===next&&p2?"next":""}">
       <div class="row"><span class="logo ${b.cls}" aria-hidden="true">${b.logo}</span>
       <span class="txt"><span class="brand">${b.name}</span><br><span class="what">${acc.handle}</span></span>
-      ${e==="sigue"?`<a class="cta" href="${acc.url}" target="_blank" rel="noopener">✓ Listo</a>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">Seguir</a>`}</div></div>`}).join("");
+      ${e==="sigue"?`<a class="cta" href="${acc.url}" target="_blank" rel="noopener" data-perfil="${b.id}">✓ Listo</a>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">Seguir</a>`}</div></div>`}).join("");
   $("wa").href=WA_GRUPO;
   $("done").hidden=!S.whatsapp;
 }
@@ -317,6 +336,7 @@ document.addEventListener("click",e=>{
     if(!S.datosOk){e.preventDefault();$("nombre").focus();return}
     // Con tocar Seguir ya cuenta: se abre el perfil y la marca queda lista, sin pedir confirmación.
     const id=open.dataset.open,fila=open.closest(".follow");
+    if(MOVIL){e.preventDefault();abrirPerfil(id)}
     track("SigueMarca",{marca:id,plataforma:S.platform});
     confeti(1,fila);
     // Se espera un momento para que el enlace termine de abrir el perfil antes de redibujar la lista.
@@ -326,6 +346,8 @@ document.addEventListener("click",e=>{
     },300);
     return;
   }
+  const perfil=e.target.closest("[data-perfil]");
+  if(perfil&&MOVIL){e.preventDefault();abrirPerfil(perfil.dataset.perfil);return}
   // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
   if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600);setTimeout(()=>location.assign("/gracias"),1500)}
   if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
