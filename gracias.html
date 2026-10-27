@@ -65,6 +65,14 @@ h1 em{font-style:normal;color:var(--pumpkin)}
 .points > b{font-family:var(--f-display);font-weight:400;color:var(--pumpkin);font-size:1.25rem}
 .bloque ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
 
+.invita{display:grid;gap:12px;padding:18px 16px;border-radius:20px;background:var(--night-2);border:2px solid var(--wa);text-align:center}
+.invita h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.45rem;letter-spacing:.02em;line-height:1.05;text-wrap:balance}
+.invita p{margin:0;text-wrap:pretty}
+.familia{display:flex;justify-content:center;gap:6px;font-size:1.6rem}
+.familia span{animation:salta 1.6s ease-in-out infinite}
+.familia span:nth-child(2){animation-delay:.15s}.familia span:nth-child(3){animation-delay:.3s}.familia span:nth-child(4){animation-delay:.45s}
+.familia .mas{font-family:var(--f-display);color:var(--wa);animation-delay:.6s}
+@keyframes salta{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
 .gracias{text-align:center;display:grid;gap:6px;padding:4px 8px}
 .gracias p{margin:0}
 footer{font-size:.75rem;color:var(--mist);text-align:center;display:grid;gap:6px;opacity:.9}
@@ -73,7 +81,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
 #confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 [hidden]{display:none!important}
 @keyframes entra{from{opacity:0;transform:translateY(18px) rotate(-2deg) scale(.96)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.boleto{animation:none}}
+@media (prefers-reduced-motion:reduce){.boleto,.familia span{animation:none}}
 </style>
 </head>
 <body>
@@ -92,6 +100,13 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
     </div>
     <div class="der"><span>¡Suerte!</span></div>
   </div>
+
+  <section class="invita">
+    <h2>Entre más familia, más oportunidades</h2>
+    <p>Cada persona que se registre con <b>su propio WhatsApp</b> tiene <b>su propio boleto</b>. Si se apuntan tu pareja, tus hermanos o tus papás, son más boletos para que la Alexa <b>se quede en casa</b>. 🏠</p>
+    <div class="familia" aria-hidden="true"><span>🎟️</span><span>🎟️</span><span>🎟️</span><span>🎟️</span><span class="mas">+</span></div>
+    <a class="btn wa" id="compartir" target="_blank" rel="noopener" href="#">Invitar a mi familia por WhatsApp</a>
+  </section>
 
   <section class="cuenta" aria-live="polite">
     <h2 id="cuenta-titulo">Faltan para el sorteo</h2>
@@ -124,12 +139,6 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
       <li>Dulces y palomitas gratis para los niños 🎃</li>
     </ul>
     <a class="btn" href="https://maps.app.goo.gl/YA1D4D8qnYke9V8o7" target="_blank" rel="noopener" id="como-llegar">Cómo llegar</a>
-  </section>
-
-  <section class="bloque">
-    <h2>Invita a tu familia</h2>
-    <p class="muted">Que también vengan a la Casa Embrujada y prueben su suerte.</p>
-    <a class="btn wa" id="compartir" target="_blank" rel="noopener" href="#">Compartir por WhatsApp</a>
   </section>
 
   <div class="gracias">
@@ -175,7 +184,7 @@ function tic(){
 }
 if(tic())setInterval(tic,30000);
 
-const texto="¡Ya estoy participando por una Amazon Alexa en la Casa Embrujada de Presas! 🎃 Regístrate gratis en 1 minuto: "+URL_SORTEO;
+const texto="¡Ya estoy participando por una Amazon Alexa en la Casa Embrujada de Presas! 🎃 Regístrate tú también con tu WhatsApp: entre más de la familia nos apuntemos, más oportunidades de que se quede en casa. Es gratis y toma 1 minuto: "+URL_SORTEO;
 $("compartir").href="https://wa.me/?text="+encodeURIComponent(texto);
 
 // Confeti en canvas, sin librerías (mismo que la landing).
