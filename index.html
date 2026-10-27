@@ -349,7 +349,15 @@ document.addEventListener("click",e=>{
   const perfil=e.target.closest("[data-perfil]");
   if(perfil&&MOVIL){e.preventDefault();abrirPerfil(perfil.dataset.perfil);return}
   // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
-  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600);setTimeout(()=>location.assign("/gracias"),1500)}
+  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600);
+    // En el celular se abre directo la app de WhatsApp: la página web de invitación no siempre logra abrirla
+    // desde el navegador de Instagram o Facebook. Si la app no se abre en 1.5 s, se usa el link web.
+    if(MOVIL){e.preventDefault();
+      const web=setTimeout(()=>{if(!document.hidden)window.open(WA_GRUPO,"_blank","noopener")},1500);
+      document.addEventListener("visibilitychange",()=>{if(document.hidden)clearTimeout(web)},{once:true});
+      abrirApp("whatsapp://chat?code="+WA_GRUPO.split("/").pop());
+    }
+    setTimeout(()=>location.assign("/gracias"),MOVIL?2500:1500)}
   if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
 });
 // Si intentan registrarse sin darle play, se sacude el video y los regresamos a él.
