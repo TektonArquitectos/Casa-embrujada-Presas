@@ -10,6 +10,9 @@ Landing estática para la campaña de Halloween de Tekton Arquitectos, Bacru Inm
 - `staff.html` → `/staff`: panel del staff con PIN (puntos, recomendaciones, importar Meta y sorteo en vivo). Se genera con `node scripts/build-staff.js` a partir de `src/panel.html` y `src/staff-head.html`; no lo edites a mano.
 - `api/registro.js`: guarda el registro que hace la landing (público, limitado por IP).
 - `api/db.js`: lectura y escritura para el panel; exige el PIN.
+- `api/evento.js`: contador de pasos de la landing (visita, registro, sigue, grupo, gracias) por día, sin datos personales.
+- `embudo.html` → `/embudo`: muestra ese contador como embudo.
+- `gracias.html` → `/gracias`: página a la que llegan después de tocar el grupo de WhatsApp.
 
 Para cambiar cuentas o enlaces, edita el arreglo `BRANDS` en `index.html`.
 

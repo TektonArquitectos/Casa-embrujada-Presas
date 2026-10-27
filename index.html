@@ -75,8 +75,8 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .event a{color:var(--bone)}
 .points{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:baseline;font-size:.95rem}
 .points > b{font-family:var(--f-display);font-weight:400;color:var(--pumpkin);font-size:1.2rem}
-.video{position:relative;border-radius:20px;overflow:hidden;background:#000;border:3px solid var(--pumpkin);box-shadow:0 0 0 0 rgba(255,122,26,.6);animation:latido 1.8s ease-out infinite}
-.video.visto{border-color:var(--ok);animation:none}
+.video{position:relative;border-radius:20px;overflow:hidden;background:#000;border:3px solid var(--pumpkin)}
+.video.visto{border-color:var(--ok)}
 .video video{display:block;width:100%;aspect-ratio:16/9;background:#000;object-fit:cover}
 .video .play{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;border:0;padding:16px;cursor:pointer;color:var(--bone);text-align:center;
   background:linear-gradient(180deg,rgba(43,23,71,.15),rgba(43,23,71,.75));font:900 1.05rem var(--f-body)}
@@ -84,14 +84,7 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .video .play .boton svg{width:34px;height:34px;margin-left:5px}
 .video .play .txt{max-width:22ch;text-shadow:0 2px 6px rgba(0,0,0,.8)}
 .video .play .txt b{color:var(--pumpkin-2)}
-.video-nota{margin:0;text-align:center;font-weight:800;font-size:.92rem;color:var(--pumpkin-2)}
-.video-nota.ok{color:var(--ok)}
-.candado{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.3);font-weight:800;font-size:.95rem}
-.candado .ico{font-size:1.4rem}
-.temblor{animation:temblor .45s ease-in-out}
-@keyframes latido{0%{box-shadow:0 0 0 0 rgba(255,122,26,.55)}70%{box-shadow:0 0 0 14px rgba(255,122,26,0)}100%{box-shadow:0 0 0 0 rgba(255,122,26,0)}}
 @keyframes rebote{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-@keyframes temblor{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 .mapa{display:grid;gap:10px;padding:16px;border-radius:18px;background:rgba(0,0,0,.22)}
 .mapa h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.35rem;letter-spacing:.02em;color:var(--pumpkin-2)}
 .mapa iframe{width:100%;aspect-ratio:4/3;border:0;border-radius:14px;background:var(--night-2)}
@@ -100,7 +93,7 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .fotos img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;display:block}
 .fotos figcaption{font-size:.78rem;color:var(--mist);text-align:center}
 #confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
-@media (prefers-reduced-motion:reduce){.video,.video .play .boton,.temblor{animation:none}}
+@media (prefers-reduced-motion:reduce){.video .play .boton{animation:none}}
 footer{font-size:.75rem;color:var(--mist);text-align:center;display:grid;gap:6px;opacity:.9}
 footer a{color:var(--mist)}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--pumpkin-2);outline-offset:3px}
@@ -111,23 +104,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 <main>
   <div class="eyebrow">Casa Embrujada · Presas, Tezontepec</div>
   <h1>¡Gana una <em>Amazon Alexa</em>!</h1>
-  <p class="lead">Completa los <b>3 pasos</b> para quedar en el sorteo en vivo del <b>2 de noviembre, 5:00 pm</b>.</p>
-  <!-- Video: hay que darle play para desbloquear el registro (no hace falta verlo completo) -->
-  <div class="video" id="video-box">
-    <video id="video" src="/video/casa-embrujada.mp4" poster="/video/poster.jpg" playsinline preload="metadata"></video>
-    <button type="button" class="play" id="play" aria-label="Reproducir el video para desbloquear el registro">
-      <span class="boton"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg></span>
-      <span class="txt">Dale <b>play</b> al video para <b>desbloquear</b> tu registro</span>
-    </button>
-  </div>
-  <p class="video-nota" id="video-nota">👆 Primero dale play al video. No tienes que verlo completo.</p>
+  <p class="lead">Deja tu <b>nombre y WhatsApp</b> y ya estás participando. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.</p>
 
   <div class="stepper" aria-hidden="true"><span id="s1"></span><span id="s2"></span><span id="s3"></span></div>
 
   <!-- Paso 1 -->
   <section class="card" id="paso1">
     <h2><small>Paso 1 de 3</small>Tus datos</h2>
-    <p class="candado" id="candado"><span class="ico" aria-hidden="true">🔒</span><span>Dale play al video de arriba para desbloquear el registro.</span></p>
     <label for="nombre">Nombre de mamá, papá o adulto responsable
       <input type="text" id="nombre" autocomplete="name" maxlength="80" placeholder="Ej. Sofía Hernández"></label>
     <label for="telefono">Tu WhatsApp (10 dígitos)
@@ -140,7 +123,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
         <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5H16.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H7.9v3h2.6V21h3z"/></svg>
         Facebook</button>
     </div>
-    <button type="button" class="btn" id="continuar">Continuar</button>
+    <button type="button" class="btn" id="continuar">¡Quiero participar!</button>
   </section>
 
   <!-- Paso 2 -->
@@ -164,6 +147,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
     <p>Quédate en el grupo: ahí llega el link del sorteo en vivo del 2 de noviembre a las 5:00 pm.</p>
     <p class="muted" style="color:inherit">Si no pudiste entrar al grupo, escríbenos al 773 680 1410.</p>
     <a class="btn" href="/gracias">Ver mi boleto</a>
+  </section>
+
+  <!-- Video de la casa: opcional, ya no bloquea el registro -->
+  <section class="mapa">
+    <h3>Conoce la Casa Embrujada 👻</h3>
+    <div class="video" id="video-box">
+      <video id="video" src="/video/casa-embrujada.mp4" poster="/video/poster.jpg" playsinline preload="metadata"></video>
+      <button type="button" class="play" id="play" aria-label="Reproducir el video de la Casa Embrujada">
+        <span class="boton"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg></span>
+        <span class="txt">Mira cómo quedó la <b>Casa Embrujada</b></span>
+      </button>
+    </div>
   </section>
 
   <section class="event">
@@ -268,6 +263,10 @@ function registrar(siguio){
 }
 const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
+// Contador de pasos (embudo): cada celular cuenta una vez por paso. Sin datos personales.
+const SESION=store.get("ce_sid")||Math.random().toString(36).slice(2,12)+Date.now().toString(36);
+store.set("ce_sid",SESION);
+function paso(p){fetch("/api/evento",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({paso:p,sesion:SESION})}).catch(()=>{})}
 const estado=id=>(S.st[S.platform]||{})[id]||"";
 const seguidas=()=>BRANDS.filter(b=>estado(b.id)==="sigue").length;
 // En el celular el perfil se abre en la app de Instagram o Facebook, donde ya tienen la sesión iniciada.
@@ -293,19 +292,12 @@ function abrirPerfil(id){
 function render(){
   document.querySelectorAll(".platform button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===S.platform)));
   const n=seguidas(),p2=S.datosOk,p3=p2&&n===3;
-  $("paso1").className="card "+(!S.video?"locked":p2?"complete":"active");
-  $("candado").hidden=S.video;
-  $("paso1").setAttribute("aria-disabled",String(!S.video));
-  ["nombre","telefono","continuar"].forEach(id=>$(id).disabled=!S.video);
-  document.querySelectorAll(".platform button").forEach(b=>b.disabled=!S.video);
-  $("video-box").classList.toggle("visto",S.video);
-  $("video-nota").textContent=S.video?"✓ ¡Listo! Ya puedes registrarte abajo.":"👆 Primero dale play al video. No tienes que verlo completo.";
-  $("video-nota").classList.toggle("ok",S.video);
+  $("paso1").className="card "+(p2?"complete":"active");
   $("paso2").className="card "+(!p2?"locked":n===3?"complete":"active");
   $("paso3").className="card "+(!p3?"locked":S.whatsapp?"complete":"active");
   $("paso2").setAttribute("aria-disabled",String(!p2));$("paso3").setAttribute("aria-disabled",String(!p3));
   $("s1").className=p2?"ok":"on";$("s2").className=p3?"ok":p2?"on":"";$("s3").className=S.whatsapp?"ok":p3?"on":"";
-  $("continuar").textContent=p2?"Guardar cambios":"Continuar";
+  $("continuar").textContent=p2?"Guardar cambios":"¡Quiero participar!";
   const next=(BRANDS.find(b=>estado(b.id)!=="sigue")||{}).id;
   $("follows").innerHTML=BRANDS.map(b=>{
     const acc=b[S.platform],e=estado(b.id);
@@ -326,7 +318,7 @@ $("continuar").addEventListener("click",()=>{
   if(nombre.length<3){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
   if(telefono.length!==10){$("telefono").focus();$("telefono").setAttribute("aria-invalid","true");return}
   S.nombre=nombre;S.telefono=telefono;S.datosOk=true;save();render();
-  registrar(seguidas()===3);
+  registrar(seguidas()===3);paso("registro");
   confeti(1,$("continuar"));
   $("paso2").scrollIntoView({behavior:"smooth",block:"start"});
 });
@@ -342,6 +334,7 @@ document.addEventListener("click",e=>{
     // Se espera un momento para que el enlace termine de abrir el perfil antes de redibujar la lista.
     setTimeout(()=>{
       S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
+      paso("sigue"+seguidas());
       if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
     },300);
     return;
@@ -349,7 +342,7 @@ document.addEventListener("click",e=>{
   const perfil=e.target.closest("[data-perfil]");
   if(perfil&&MOVIL){e.preventDefault();abrirPerfil(perfil.dataset.perfil);return}
   // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
-  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");confeti(2);setTimeout(render,600);
+  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");paso("grupo");confeti(2);setTimeout(render,600);
     // En el celular se abre directo la app de WhatsApp: la página web de invitación no siempre logra abrirla
     // desde el navegador de Instagram o Facebook. Si la app no se abre en 1.5 s, se usa el link web.
     if(MOVIL){e.preventDefault();
@@ -360,25 +353,21 @@ document.addEventListener("click",e=>{
     setTimeout(()=>location.assign("/gracias"),MOVIL?2500:1500)}
   if(e.target.closest("#como-llegar"))confeti(1,e.target.closest("a"));
 });
-// Si intentan registrarse sin darle play, se sacude el video y los regresamos a él.
-$("paso1").addEventListener("click",()=>{
-  if(S.video)return;
-  const box=$("video-box");box.scrollIntoView({behavior:"smooth",block:"center"});
-  box.classList.remove("temblor");void box.offsetWidth;box.classList.add("temblor");
-});
-// Desbloqueo: basta con darle play (no hace falta verlo completo).
+// Video de la casa: opcional. Al darle play se quitan la portada y el botón.
 const video=$("video");
-function desbloquear(){
-  $("play").hidden=true;video.controls=true;
+function alReproducir(){
+  $("play").hidden=true;video.controls=true;$("video-box").classList.add("visto");
   if(S.video)return;
-  S.video=true;save();render();track("PlayVideo");
-  confeti(1,$("video-box"));
-  setTimeout(()=>$("paso1").scrollIntoView({behavior:"smooth",block:"start"}),1800);
+  S.video=true;save();track("PlayVideo");paso("play");
 }
-$("play").addEventListener("click",()=>{const p=video.play();if(p&&p.catch)p.catch(()=>desbloquear())});
-video.addEventListener("play",desbloquear);
+$("play").addEventListener("click",()=>{const p=video.play();if(p&&p.catch)p.catch(()=>alReproducir())});
+video.addEventListener("play",alReproducir);
 $("nombre").value=S.nombre;$("telefono").value=S.telefono;
 render();
+paso("visita");
+// "empieza": al tocar o escribir en el formulario (el servidor lo cuenta una sola vez por celular).
+let empezo=false;
+["nombre","telefono"].forEach(id=>["focus","pointerdown","input"].forEach(ev=>$(id).addEventListener(ev,()=>{if(!empezo){empezo=true;paso("empieza")}})));
 </script>
 </body>
 </html>

@@ -237,6 +237,8 @@ setTimeout(()=>confeti(2),350);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)confeti(1)});
 document.addEventListener("click",e=>{const a=e.target.closest("#compartir,#como-llegar");if(a)confeti(1,a)});
 try{if(window.fbq)fbq("trackCustom","Gracias")}catch(e){}
+// Contador de pasos (mismo identificador de celular que la landing).
+try{const s=JSON.parse(localStorage.getItem("ce_sid"));if(s)fetch("/api/evento",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({paso:"gracias",sesion:s})}).catch(()=>{})}catch(e){}
 </script>
 </body>
 </html>
