@@ -288,7 +288,8 @@ th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu
 <script>
 const DIAS=[{id:"d30",label:"Vie 30 oct"},{id:"d31",label:"Sáb 31 oct"},{id:"d01",label:"Dom 1 nov"}];
 const MARCAS=[{id:"tekton",label:"Tekton"},{id:"bacru",label:"Bacru"},{id:"eupalinos",label:"Eupalinos"}];
-const DEF={seguir:1,foto:2,referido:3};
+// Boletos por acción: registrarse, cada marca seguida, entrar al grupo, foto por día y cada recomendación.
+const DEF={registro:1,marca:1,grupo:1,foto:2,referido:3};
 const PLAT={instagram:"Instagram",facebook:"Facebook"};
 const INTERES={tekton:"Construir o remodelar (Tekton)",bacru:"Vender o comprar inmueble (Bacru)"};
 const METAS={tekton:5,bacru:5};
@@ -301,9 +302,13 @@ const tel10=s=>digits(s).slice(-10);
 const fmtTel=t=>t&&t.length===10?`${t.slice(0,3)} ${t.slice(3,6)} ${t.slice(6)}`:(t||"");
 const fecha=iso=>{try{return new Date(iso).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}};
 
+// Marcas que sigue: la landing guarda cuántas (0 a 3); los registros anteriores solo tienen "las 3".
+const marcasDe=p=>{const sig=p.sigue||{};return typeof sig.marcas==="number"?sig.marcas:(sig.todas?3:0)};
 function pts(p){
-  const c=S.config,sig=p.sigue||{},fo=p.fotos||{};
-  return (sig.todas?c.seguir:0)
+  const c=S.config,fo=p.fotos||{};
+  return c.registro
+    +marcasDe(p)*c.marca
+    +(p.grupo?c.grupo:0)
     +DIAS.filter(d=>fo[d.id]).length*c.foto
     +(p.referidos||[]).filter(r=>r.estado!=="no_valido").length*c.referido;
 }
@@ -400,8 +405,11 @@ function vPersona(p){
       </div>
       <div class="score"><b>${n}</b><span>${n===1?"punto · 1 boleto":`puntos · ${n} boletos`}</span></div>
     </div>
-    <h3>Sigue a Tekton, Bacru y Eupalinos · +${c.seguir} (en Instagram o Facebook)</h3>
-    <div class="toggles">${Object.keys(PLAT).map(k=>{const on=!!sig.todas&&sig.plataforma===k;return `<button type="button" class="tog" data-act="sigue" data-k="${k}" aria-pressed="${on}" ${dis}><span>Las 3 en ${PLAT[k]}<br><small>${on?"Punto sumado":"Tocar si ya las sigue"}</small></span><span class="mark">${on?"✓":""}</span></button>`}).join("")}</div>
+    <p class="small muted">Registro: +${c.registro} ${c.registro===1?"boleto":"boletos"}.</p>
+    <h3>Sigue a Tekton, Bacru y Eupalinos · +${c.marca} por cada marca${marcasDe(p)&&!sig.todas?` · ahora sigue ${marcasDe(p)} de 3`:""}</h3>
+    <div class="toggles">${Object.keys(PLAT).map(k=>{const on=!!sig.todas&&sig.plataforma===k;return `<button type="button" class="tog" data-act="sigue" data-k="${k}" aria-pressed="${on}" ${dis}><span>Las 3 en ${PLAT[k]}<br><small>${on?"Boletos sumados":"Tocar si ya las sigue"}</small></span><span class="mark">${on?"✓":""}</span></button>`}).join("")}</div>
+    <h3>Grupo de WhatsApp · +${c.grupo}</h3>
+    <div class="toggles"><button type="button" class="tog" data-act="grupo" aria-pressed="${!!p.grupo}" ${dis}><span>Entró al grupo<br><small>${p.grupo?"Boleto sumado":"Tocar si ya está en el grupo"}</small></span><span class="mark">${p.grupo?"✓":""}</span></button></div>
     <label class="field">Usuario de Instagram o nombre en Facebook (para verificar si gana)<input type="text" id="p-usuario" maxlength="80" value="${esc(sig.usuario||"")}" placeholder="@usuario" ${dis}></label>
     <h3>Foto en la casa compartida con hashtag · +${c.foto} por día</h3>
     <div class="toggles">${DIAS.map(d=>`<button type="button" class="tog" data-act="foto" data-k="${d.id}" aria-pressed="${!!fo[d.id]}" ${dis}><span>${d.label}<br><small>${fo[d.id]?"Publicada":"#tektonhalloween…"}</small></span><span class="mark">${fo[d.id]?"✓":""}</span></button>`).join("")}</div>
@@ -512,7 +520,9 @@ function vAjustes(){
   return `<div class="grid2"><form class="card" id="f-config">
     <h2>Valor de cada acción</h2>
     <p class="small muted">Si cambias un valor, se recalculan los puntos de todos. Conviene dejarlo fijo antes del 30 de octubre.</p>
-    <label class="field">Seguir a las 3 marcas (en Instagram o Facebook)<input type="number" id="c-seguir" min="0" max="20" value="${c.seguir}"></label>
+    <label class="field">Registrarse<input type="number" id="c-registro" min="0" max="20" value="${c.registro}"></label>
+    <label class="field">Seguir una marca (cada una de las 3)<input type="number" id="c-marca" min="0" max="20" value="${c.marca}"></label>
+    <label class="field">Entrar al grupo de WhatsApp<input type="number" id="c-grupo" min="0" max="20" value="${c.grupo}"></label>
     <label class="field">Foto compartida con hashtag (por día)<input type="number" id="c-foto" min="0" max="20" value="${c.foto}"></label>
     <label class="field">Recomendar un cliente (cada uno)<input type="number" id="c-referido" min="0" max="20" value="${c.referido}"></label>
     <div class="row"><button class="btn" type="submit" ${dis}>Guardar valores</button></div>
@@ -536,7 +546,7 @@ function abrir(id){S.current=id;S.confirmDel=false;S.tab="registrar";render();wi
 async function toggleSigue(k){
   const p=S.parts.get(S.current);if(!p)return;
   const sig=p.sigue||{},on=!(sig.todas&&sig.plataforma===k);
-  const nuevo={todas:on,plataforma:on?k:"",usuario:sig.usuario||""};
+  const nuevo={todas:on,marcas:on?3:0,plataforma:on?k:"",usuario:sig.usuario||""};
   const ok=await write(()=>pref(p.telefono).update({sigue:nuevo,actualizado:new Date().toISOString()}));
   if(ok){p.sigue=nuevo;render()}
 }
@@ -603,7 +613,7 @@ document.addEventListener("submit",async e=>{
   }
   if(f.id==="f-config"){
     const num=id=>Math.max(0,Math.min(20,parseInt(document.getElementById(id).value,10)||0));
-    const c={seguir:num("c-seguir"),foto:num("c-foto"),referido:num("c-referido")};
+    const c={registro:num("c-registro"),marca:num("c-marca"),grupo:num("c-grupo"),foto:num("c-foto"),referido:num("c-referido")};
     if(await write(()=>S.db.doc("config/puntos").set(c))){S.config=c;toast("Valores guardados");render()}
   }
 });
@@ -611,6 +621,7 @@ document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-act]");if(!b||b.tagName==="SELECT")return;
   const a=b.dataset.act;
   if(a==="sigue")toggleSigue(b.dataset.k);
+  else if(a==="grupo"){const p=S.parts.get(S.current);if(p){const v=!p.grupo;if(await write(()=>pref(p.telefono).update({grupo:v,actualizado:new Date().toISOString()}))){p.grupo=v;render()}}}
   else if(a==="foto")toggle("fotos",b.dataset.k);
   else if(a==="abrir")abrir(b.dataset.id);
   else if(a==="cerrar"){S.current=null;S.confirmDel=false;render()}

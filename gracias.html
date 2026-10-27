@@ -97,7 +97,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--pumpkin-2);outline-
     <div class="izq">
       <span class="tipo">Boleto oficial</span>
       <span class="quien" id="quien">¡Este es tu boleto!</span>
-      <span class="premio">🎁 Amazon Alexa</span>
+      <span class="premio" id="cuantos">🎁 Amazon Alexa</span>
       <span class="cuando">Sorteo en vivo · 2 de noviembre, 5:00 pm</span>
       <span class="sello">✓ Registrado</span>
     </div>
@@ -164,13 +164,17 @@ const SORTEO=new Date("2026-11-02T17:00:00-06:00").getTime();
 const URL_SORTEO="https://casa-embrujada-presas.vercel.app/";
 const $=id=>document.getElementById(id);
 
-let nombre="";
-try{nombre=((JSON.parse(localStorage.getItem("ce_v2"))||{}).nombre||"").trim()}catch(e){}
+let nombre="",guardado={};
+try{guardado=JSON.parse(localStorage.getItem("ce_v2"))||{};nombre=(guardado.nombre||"").trim()}catch(e){}
 const primero=nombre.split(/\s+/)[0]||"";
 if(primero){
   $("titulo").innerHTML="¡Ya estás <em>dentro</em>, "+primero.replace(/[<>&"]/g,"")+"!";
   $("quien").textContent=nombre;
 }
+// Mismos boletos que muestra la landing: registro + marcas seguidas + grupo.
+const st=(guardado.st||{})[guardado.platform]||{};
+const nBoletos=(guardado.datosOk?1:0)+Object.values(st).filter(v=>v==="sigue").length+(guardado.whatsapp?1:0);
+if(nBoletos)$("cuantos").textContent="🎟️ "+nBoletos+(nBoletos===1?" boleto":" boletos")+" para la Amazon Alexa";
 
 function tic(){
   const falta=SORTEO-Date.now();

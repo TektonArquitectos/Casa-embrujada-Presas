@@ -29,10 +29,19 @@ h1{font-family:var(--f-display);font-weight:400;font-size:clamp(2.1rem,10vw,2.9r
 h1 em{font-style:normal;color:var(--pumpkin)}
 .lead{text-align:center;color:var(--mist);margin:0}
 .lead b{color:var(--bone)}
-.stepper{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.stepper span{height:6px;border-radius:99px;background:rgba(0,0,0,.3)}
-.stepper span.on{background:var(--pumpkin)}
-.stepper span.ok{background:var(--ok)}
+.boletera{position:sticky;top:8px;z-index:20;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:var(--bone);color:var(--night);box-shadow:0 6px 0 rgba(0,0,0,.28)}
+.boletera .cuenta{display:flex;align-items:baseline;gap:6px;font-weight:800;font-size:.9rem;white-space:nowrap}
+.boletera .cuenta b{font-family:var(--f-display);font-weight:400;font-size:1.9rem;line-height:1;color:var(--pumpkin)}
+.boletera .tick{font-size:1.3rem;align-self:center}
+.boletera .ranuras{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.boletera .ranuras span{height:12px;border-radius:99px;background:rgba(43,23,71,.15)}
+.boletera .ranuras span.ok{background:var(--pumpkin)}
+.boletera.pop .cuenta b{animation:pop .5s ease-out}
+.boletera .toast{position:absolute;right:12px;top:-14px;padding:4px 10px;border-radius:99px;background:var(--ok);color:#06210f;font-weight:900;font-size:.85rem;opacity:0;pointer-events:none}
+.boletera.pop .toast{animation:sube 1.4s ease-out}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+@keyframes sube{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:none}75%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.cambiar{justify-self:center;border:0;background:none;color:var(--mist);font:700 .85rem var(--f-body);text-decoration:underline;cursor:pointer;padding:4px}
 .card{display:grid;gap:12px;padding:18px 16px;border-radius:20px;background:var(--night-2);border:2px solid transparent}
 .card.active{border-color:var(--pumpkin)}
 .card.locked{opacity:.45}
@@ -43,10 +52,6 @@ h1 em{font-style:normal;color:var(--pumpkin)}
 .muted{color:var(--mist);font-size:.92rem}
 label{display:grid;gap:4px;font-weight:800;font-size:.9rem}
 input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:var(--night);background:var(--bone);border:0;border-radius:12px;padding:12px 14px}
-.platform{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:rgba(0,0,0,.25);border-radius:999px}
-.platform button{border:0;border-radius:999px;padding:10px 8px;font:800 .95rem var(--f-body);color:var(--mist);background:transparent;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center}
-.platform button[aria-pressed="true"]{background:var(--bone);color:var(--night)}
-.platform svg{width:18px;height:18px;flex:0 0 auto}
 .btn{display:block;width:100%;border:0;border-radius:999px;padding:14px 16px;font:900 1rem var(--f-body);text-align:center;text-decoration:none;cursor:pointer;background:var(--pumpkin);color:#2a1300}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.wa{background:var(--wa);color:#05351a;font-size:1.05rem}
@@ -93,7 +98,7 @@ input[type=text],input[type=tel]{width:100%;font:600 1rem var(--f-body);color:va
 .fotos img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;display:block}
 .fotos figcaption{font-size:.78rem;color:var(--mist);text-align:center}
 #confeti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
-@media (prefers-reduced-motion:reduce){.video .play .boton{animation:none}}
+@media (prefers-reduced-motion:reduce){.video .play .boton,.boletera.pop .cuenta b{animation:none}}
 footer{font-size:.75rem;color:var(--mist);text-align:center;display:grid;gap:6px;opacity:.9}
 footer a{color:var(--mist)}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--pumpkin-2);outline-offset:3px}
@@ -104,49 +109,47 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 <main>
   <div class="eyebrow">Casa Embrujada · Presas, Tezontepec</div>
   <h1>¡Gana una <em>Amazon Alexa</em>!</h1>
-  <p class="lead">Deja tu <b>nombre y WhatsApp</b> y ya estás participando. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.</p>
+  <p class="lead">Regístrate <b>gratis</b> y junta hasta <b>5 boletos</b> en un minuto. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.</p>
 
-  <div class="stepper" aria-hidden="true"><span id="s1"></span><span id="s2"></span><span id="s3"></span></div>
+  <!-- Boletera: cada acción suma un boleto -->
+  <div class="boletera" id="boletera" aria-live="polite">
+    <div class="cuenta"><span class="tick" aria-hidden="true">🎟️</span><b id="nb">0</b><span>de 5 boletos</span></div>
+    <div class="ranuras" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <span class="toast" id="mas1" aria-hidden="true">+1 boleto</span>
+  </div>
 
   <!-- Paso 1 -->
   <section class="card" id="paso1">
-    <h2><small>Paso 1 de 3</small>Tus datos</h2>
-    <label for="nombre">Nombre de mamá, papá o adulto responsable
+    <h2><small>Paso 1 · +1 boleto</small>Tus datos</h2>
+    <label for="nombre">Tu nombre
       <input type="text" id="nombre" autocomplete="name" maxlength="80" placeholder="Ej. Sofía Hernández"></label>
-    <label for="telefono">Tu WhatsApp (10 dígitos)
+    <label for="telefono">Tu WhatsApp
       <input type="tel" id="telefono" autocomplete="tel-national" inputmode="numeric" maxlength="14" placeholder="773 123 4567"></label>
-    <div class="platform" role="group" aria-label="¿Dónde nos vas a seguir?">
-      <button type="button" data-p="instagram" aria-pressed="true">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg>
-        Instagram</button>
-      <button type="button" data-p="facebook" aria-pressed="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5H16.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H7.9v3h2.6V21h3z"/></svg>
-        Facebook</button>
-    </div>
-    <button type="button" class="btn" id="continuar">¡Quiero participar!</button>
+    <p class="muted">Si participa un niño, pon el nombre de mamá o papá.</p>
+    <button type="button" class="btn" id="continuar">¡Quiero mi boleto! 🎟️</button>
   </section>
 
   <!-- Paso 2 -->
   <section class="card locked" id="paso2" aria-disabled="true">
-    <h2><small>Paso 2 de 3</small>Sigue a las 3 marcas</h2>
-    <p class="shot"><span aria-hidden="true">👆</span><span>Toca <b>Seguir</b> en cada marca: se abre su perfil para que le des Seguir y aquí queda lista. Al ganador le revisamos en vivo que siga a las 3.</span></p>
+    <h2><small>Paso 2 · +1 boleto por cada marca</small>Sigue a las 3 marcas</h2>
+    <p class="shot"><span aria-hidden="true">👆</span><span>Toca <b>Seguir</b>: se abre su perfil, le das Seguir y aquí ganas tu boleto. Al ganador le revisamos en vivo que siga a las marcas.</span></p>
     <div class="follows" id="follows"></div>
+    <button type="button" class="cambiar" id="cambiar-plat"></button>
   </section>
 
   <!-- Paso 3 -->
   <section class="card locked" id="paso3" aria-disabled="true">
-    <h2><small>Paso 3 de 3 · obligatorio</small>Únete al grupo de WhatsApp</h2>
-    <div class="alert">Si no haces este paso, no quedas registrado en el sorteo.</div>
-    <p>Tu boleto ya quedó guardado. Toca el botón, entra al <b>grupo de WhatsApp</b> y listo: ahí mandamos el link del <b>sorteo en vivo por Google Meet</b>.</p>
-    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Entrar al grupo de WhatsApp</a>
+    <h2><small>Paso 3 · +1 boleto</small>Únete al grupo de WhatsApp</h2>
+    <p>Ahí mandamos el link del <b>sorteo en vivo por Google Meet</b> y avisamos al ganador.</p>
+    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Entrar al grupo · +1 boleto</a>
     <p class="muted">¿Dudas? WhatsApp de Papelería Eupalinos: <b>773 680 1410</b></p>
   </section>
 
   <section class="done-card" id="done" hidden aria-live="polite">
-    <h2>¡Listo!</h2>
+    <h2>¡Tienes <span id="done-n">5</span> boletos!</h2>
     <p>Quédate en el grupo: ahí llega el link del sorteo en vivo del 2 de noviembre a las 5:00 pm.</p>
     <p class="muted" style="color:inherit">Si no pudiste entrar al grupo, escríbenos al 773 680 1410.</p>
-    <a class="btn" href="/gracias">Ver mi boleto</a>
+    <a class="btn" href="/gracias">Ver mis boletos</a>
   </section>
 
   <!-- Video de la casa: opcional, ya no bloquea el registro -->
@@ -255,12 +258,16 @@ const confeti=(()=>{
     if(!corriendo){corriendo=true;requestAnimationFrame(cuadro)}
   };
 })();
-// Guarda el registro en la base de datos del staff. Si falla, el registro por WhatsApp sigue funcionando.
-function registrar(siguio){
+// Guarda el registro en la base de datos del staff con las marcas que sigue y si tocó el grupo.
+function registrar(){
   if(!S.telefono)return;
+  const marcas=seguidas();
   fetch("/api/registro",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,
-    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,siguio})}).catch(()=>{});
+    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,siguio:marcas===3,marcas,grupo:S.whatsapp})}).catch(()=>{});
 }
+// Boletos que gana en la landing: 1 por registrarse, 1 por cada marca y 1 por el grupo (máximo 5).
+const boletos=()=>(S.datosOk?1:0)+seguidas()+(S.whatsapp?1:0);
+let boletosAntes=null;
 const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
 // Contador de pasos (embudo): cada celular cuenta una vez por paso. Sin datos personales.
@@ -290,35 +297,39 @@ function abrirPerfil(id){
 }
 
 function render(){
-  document.querySelectorAll(".platform button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===S.platform)));
-  const n=seguidas(),p2=S.datosOk,p3=p2&&n===3;
+  const n=seguidas(),p2=S.datosOk,p3=p2;
   $("paso1").className="card "+(p2?"complete":"active");
   $("paso2").className="card "+(!p2?"locked":n===3?"complete":"active");
   $("paso3").className="card "+(!p3?"locked":S.whatsapp?"complete":"active");
   $("paso2").setAttribute("aria-disabled",String(!p2));$("paso3").setAttribute("aria-disabled",String(!p3));
-  $("s1").className=p2?"ok":"on";$("s2").className=p3?"ok":p2?"on":"";$("s3").className=S.whatsapp?"ok":p3?"on":"";
-  $("continuar").textContent=p2?"Guardar cambios":"¡Quiero participar!";
+  $("continuar").textContent=p2?"Guardar cambios":"¡Quiero mi boleto! 🎟️";
+  $("cambiar-plat").textContent=S.platform==="instagram"?"¿Usas Facebook en vez de Instagram? Cambiar":"¿Usas Instagram en vez de Facebook? Cambiar";
+  // Boletera: llena una ranura por boleto y celebra cuando sube.
+  const nb=boletos();
+  $("nb").textContent=nb;$("done-n").textContent=nb;
+  document.querySelectorAll(".boletera .ranuras span").forEach((s,i)=>s.classList.toggle("ok",i<nb));
+  if(boletosAntes!==null&&nb>boletosAntes){const b=$("boletera");b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
+  boletosAntes=nb;
   const next=(BRANDS.find(b=>estado(b.id)!=="sigue")||{}).id;
   $("follows").innerHTML=BRANDS.map(b=>{
     const acc=b[S.platform],e=estado(b.id);
     return `<div class="follow ${e==="sigue"?"done":b.id===next&&p2?"next":""}">
       <div class="row"><span class="logo ${b.cls}" aria-hidden="true">${b.logo}</span>
       <span class="txt"><span class="brand">${b.name}</span><br><span class="what">${acc.handle}</span></span>
-      ${e==="sigue"?`<a class="cta" href="${acc.url}" target="_blank" rel="noopener" data-perfil="${b.id}">✓ Listo</a>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">Seguir</a>`}</div></div>`}).join("");
+      ${e==="sigue"?`<a class="cta" href="${acc.url}" target="_blank" rel="noopener" data-perfil="${b.id}">✓ Listo</a>`:`<a class="cta" href="${p2?acc.url:"#paso1"}" ${p2?'target="_blank" rel="noopener"':""} data-open="${b.id}">Seguir · +1</a>`}</div></div>`}).join("");
   $("wa").href=WA_GRUPO;
   $("done").hidden=!S.whatsapp;
 }
 
-document.querySelector(".platform").addEventListener("click",e=>{
-  const b=e.target.closest("button[data-p]");if(!b)return;S.platform=b.dataset.p;save();render();
-});
+// La red se detecta sola (app de origen o ?p=); este enlace del paso 2 la cambia si hace falta.
+$("cambiar-plat").addEventListener("click",()=>{S.platform=S.platform==="instagram"?"facebook":"instagram";save();render()});
 $("continuar").addEventListener("click",()=>{
   const nombre=$("nombre").value.trim(),telefono=$("telefono").value.replace(/\D/g,"").slice(-10);
   ["nombre","telefono"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   if(nombre.length<3){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
   if(telefono.length!==10){$("telefono").focus();$("telefono").setAttribute("aria-invalid","true");return}
   S.nombre=nombre;S.telefono=telefono;S.datosOk=true;save();render();
-  registrar(seguidas()===3);paso("registro");
+  registrar();paso("registro");
   confeti(1,$("continuar"));
   $("paso2").scrollIntoView({behavior:"smooth",block:"start"});
 });
@@ -334,15 +345,15 @@ document.addEventListener("click",e=>{
     // Se espera un momento para que el enlace termine de abrir el perfil antes de redibujar la lista.
     setTimeout(()=>{
       S.st[S.platform]={...(S.st[S.platform]||{}),[id]:"sigue"};save();render();
-      paso("sigue"+seguidas());
-      if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});registrar(true);confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
+      paso("sigue"+seguidas());registrar();
+      if(seguidas()===3){track("SiguioLas3",{plataforma:S.platform});confeti(2);setTimeout(()=>$("paso3").scrollIntoView({behavior:"smooth",block:"start"}),250)}
     },300);
     return;
   }
   const perfil=e.target.closest("[data-perfil]");
   if(perfil&&MOVIL){e.preventDefault();abrirPerfil(perfil.dataset.perfil);return}
   // El grupo se abre en otra pestaña o en la app; esta pestaña pasa a la página de gracias.
-  if(e.target.closest("#wa")){if(seguidas()<3||!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();track("AbrioWhatsApp");paso("grupo");confeti(2);setTimeout(render,600);
+  if(e.target.closest("#wa")){if(!S.datosOk){e.preventDefault();return}S.whatsapp=true;save();render();registrar();track("AbrioWhatsApp");paso("grupo");confeti(2);
     // En el celular se abre directo la app de WhatsApp: la página web de invitación no siempre logra abrirla
     // desde el navegador de Instagram o Facebook. Si la app no se abre en 1.5 s, se usa el link web.
     if(MOVIL){e.preventDefault();
