@@ -529,7 +529,7 @@ function vAjustes(){
   </form><div style="display:grid;gap:16px"><div class="card">
     <h2>Importar registros del formulario de Meta</h2>
     <p class="small muted">En Meta Business Suite, abre Centro de clientes potenciales (o en el Administrador de anuncios, Formularios instantáneos) y descarga los registros en CSV. Súbelo aquí cada vez que quieras actualizar: nadie se duplica, porque cada teléfono es una sola persona.</p>
-    <p class="small muted">A cada registro se le suma el punto de seguir a las 3; se comprueba solo si gana.</p>
+    <p class="small muted">Cada registro nuevo recibe 1 boleto por registrarse. Las marcas y el grupo se suman cuando los hace en la página o cuando los marcas aquí; a quien ya estaba registrado no se le cambian sus boletos.</p>
     ${S.importando?`<div class="banner">${S.importando.fin?"Listo":"Importando"}: ${S.importando.hechos} de ${S.importando.total} · ${S.importando.nuevos} nuevos · ${S.importando.actualizados} actualizados${S.importando.omitidos?` · ${S.importando.omitidos} sin teléfono válido`:""}</div>`:""}
     <div class="row"><label class="btn ghost" for="meta-csv" ${dis?'aria-disabled="true"':""}>Elegir archivo CSV de Meta<input type="file" id="meta-csv" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden ${dis}></label></div>
   </div><div class="card">
@@ -674,11 +674,12 @@ async function importarMeta(file){
     const usuario=val(r,cUser),interes=interesDe(val(r,cInt));
     const nombre=val(r,cName)||[val(r,cFirst),val(r,cLast)].filter(Boolean).join(" ")||"Sin nombre";
     const ex=S.parts.get(t);let ok;
-    if(ex){const s=ex.sigue||{};const upd={sigue:{todas:true,plataforma:s.todas&&s.plataforma?s.plataforma:plat,usuario:s.usuario||usuario},actualizado:new Date().toISOString()};
+    // El formulario de Meta solo vale el boleto de registro; marcas y grupo se ganan en la landing o se marcan aquí.
+    if(ex){const upd={actualizado:new Date().toISOString()};
       if(interes&&!ex.interes)upd.interes=interes;
       ok=await write(()=>pref(t).update(upd));if(ok)st.actualizados++}
     else{const doc={nombre,telefono:t,tipo:"adulto",tutor:"",contacto:true,interes,origen:"meta",
-        sigue:{todas:true,plataforma:plat,usuario},fotos:{d30:false,d31:false,d01:false},referidos:[],
+        sigue:{todas:false,marcas:0,plataforma:plat,usuario},grupo:false,fotos:{d30:false,d31:false,d01:false},referidos:[],
         creado:val(r,cTime)||new Date().toISOString()};
       ok=await write(()=>pref(t).set(doc));if(ok){st.nuevos++;S.parts.set(t,doc)}}
     if(!ok)break;

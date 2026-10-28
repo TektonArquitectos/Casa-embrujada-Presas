@@ -8,7 +8,7 @@ Flujo completo:
 4. En la landing toca **Seguir** en Tekton, Bacru y Eupalinos. La plataforma (Instagram o Facebook) se detecta sola.
 5. Cada día o al final, descarga los registros de Meta en CSV y súbelos a la página de puntos (pestaña Ajustes → Importar registros del formulario de Meta).
 
-> Meta no permite comprobar automáticamente quién sigue una cuenta. El punto se suma al registrarse y se verifica **solo al ganador** antes de anunciarlo (la página de puntos tiene ese paso).
+> Cada registro que llega del formulario de Meta recibe **1 boleto** (el de registrarse). Los boletos por seguir las marcas y entrar al grupo se suman cuando la persona lo hace en la landing (el formulario la manda ahí al terminar) o cuando el staff los marca en la página de puntos. Meta no permite comprobar automáticamente quién sigue una cuenta, así que se verifica **solo al ganador** antes de anunciarlo.
 
 ## 1. Antes de empezar
 
