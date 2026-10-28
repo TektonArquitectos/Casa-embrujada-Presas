@@ -677,7 +677,9 @@ async function importarMeta(file){
     // El formulario de Meta solo vale el boleto de registro; marcas y grupo se ganan en la landing o se marcan aquí.
     if(ex){const upd={actualizado:new Date().toISOString()};
       if(interes&&!ex.interes)upd.interes=interes;
-      ok=await write(()=>pref(t).update(upd));if(ok)st.actualizados++}
+      // Quien confirmó su WhatsApp en la landing después del formulario quedó sin nombre: aquí se completa.
+      if((!ex.nombre||ex.nombre==="Sin nombre")&&nombre!=="Sin nombre")upd.nombre=nombre;
+      ok=await write(()=>pref(t).update(upd));if(ok){Object.assign(ex,upd);st.actualizados++}}
     else{const doc={nombre,telefono:t,tipo:"adulto",tutor:"",contacto:true,interes,origen:"meta",
         sigue:{todas:false,marcas:0,plataforma:plat,usuario},grupo:false,fotos:{d30:false,d31:false,d01:false},referidos:[],
         creado:val(r,cTime)||new Date().toISOString()};

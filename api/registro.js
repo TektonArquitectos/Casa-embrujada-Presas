@@ -18,7 +18,9 @@ module.exports = async (req, res) => {
   // Cuántas de las 3 marcas dice seguir y si tocó el grupo de WhatsApp (cada una suma un boleto).
   const marcas = Math.max(0, Math.min(3, parseInt(b.marcas, 10) || (siguio ? 3 : 0)));
   const grupo = b.grupo === true;
-  if (tel.length !== 10 || nombre.length < 2) return res.status(400).json({ error: "Datos incompletos" });
+  // Quien llega del formulario de Meta ya dio su nombre allá: solo confirma el WhatsApp y el nombre llega con el CSV.
+  const meta = b.origen === "meta";
+  if (tel.length !== 10 || (nombre.length < 2 && !meta)) return res.status(400).json({ error: "Datos incompletos" });
 
   try {
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "sin-ip";
@@ -44,13 +46,14 @@ module.exports = async (req, res) => {
         grupo: !!cur.grupo || grupo,
         actualizado: ahora,
       };
-      if (!cur.nombre || cur.nombre === "Sin nombre") doc.nombre = nombre;
+      if ((!cur.nombre || cur.nombre === "Sin nombre") && nombre.length >= 2) doc.nombre = nombre;
       await setDoc("participantes", tel, doc);
       return res.json({ ok: true, nuevo: false });
     }
 
     await setDoc("participantes", tel, {
-      nombre, telefono: tel, tipo: "adulto", tutor: "", contacto: true, interes: "", origen: "landing",
+      nombre: nombre.length >= 2 ? nombre : "Sin nombre", telefono: tel, tipo: "adulto", tutor: "", contacto: true, interes: "",
+      origen: meta ? "meta" : "landing",
       sigue: { todas: marcas === 3, marcas, plataforma, usuario }, grupo,
       fotos: { d30: false, d31: false, d01: false }, referidos: [], creado: ahora,
     });

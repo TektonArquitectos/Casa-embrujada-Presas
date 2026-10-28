@@ -2,7 +2,7 @@
 // sin datos personales. POST registra un paso; GET devuelve los totales de los últimos días.
 const { cmd } = require("./_redis");
 
-const PASOS = ["visita", "empieza", "registro", "sigue1", "sigue2", "sigue3", "grupo", "gracias", "play"];
+const PASOS = ["visita", "meta", "empieza", "registro", "sigue1", "sigue2", "sigue3", "grupo", "gracias", "play"];
 const MAX_POR_HORA = 200;
 
 // Día en hora del centro de México (UTC-6, sin horario de verano).

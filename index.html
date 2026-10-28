@@ -109,7 +109,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 <main>
   <div class="eyebrow">Casa Embrujada · Presas, Tezontepec</div>
   <h1>¡Gana una <em>Amazon Alexa</em>!</h1>
-  <p class="lead">Regístrate <b>gratis</b> y junta hasta <b>5 boletos</b> en un minuto. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.</p>
+  <p class="lead" id="lead">Regístrate <b>gratis</b> y junta hasta <b>5 boletos</b> en un minuto. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.</p>
 
   <!-- Boletera: cada acción suma un boleto -->
   <div class="boletera" id="boletera" aria-live="polite">
@@ -120,12 +120,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 
   <!-- Paso 1 -->
   <section class="card" id="paso1">
-    <h2><small>Paso 1 · +1 boleto</small>Tus datos</h2>
-    <label for="nombre">Tu nombre
+    <h2 id="p1-titulo"><small>Paso 1 · +1 boleto</small>Tus datos</h2>
+    <p id="p1-meta" hidden>Tu nombre ya nos llegó en el formulario de Facebook. Solo confirma el <b>mismo WhatsApp</b> para sumarte los demás boletos.</p>
+    <label for="nombre" id="l-nombre">Tu nombre
       <input type="text" id="nombre" autocomplete="name" maxlength="80" placeholder="Ej. Sofía Hernández"></label>
     <label for="telefono">Tu WhatsApp
       <input type="tel" id="telefono" autocomplete="tel-national" inputmode="numeric" maxlength="14" placeholder="773 123 4567"></label>
-    <p class="muted">Si participa un niño, pon el nombre de mamá o papá.</p>
+    <p class="muted" id="p1-nota">Si participa un niño, pon el nombre de mamá o papá.</p>
     <button type="button" class="btn" id="continuar">¡Quiero mi boleto! 🎟️</button>
   </section>
 
@@ -213,9 +214,11 @@ const BRANDS=[
 ];
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const ua=navigator.userAgent||"";
-const qp=new URLSearchParams(location.search).get("p");
+const params=new URLSearchParams(location.search),qp=params.get("p");
 const saved=store.get("ce_v2")||{};
 const S={
+  // Llega desde el botón final del formulario de Meta (?f=meta): su nombre y su boleto de registro ya están allá.
+  meta:params.get("f")==="meta"||!!saved.meta,
   platform:qp==="fb"||qp==="facebook"?"facebook":qp==="ig"||qp==="instagram"?"instagram"
     :saved.platform||(/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?"facebook":"instagram"),
   nombre:saved.nombre||"",telefono:saved.telefono||"",datosOk:!!saved.datosOk&&!!saved.telefono,
@@ -224,7 +227,7 @@ const S={
   // true en cuanto le dan play al video; desbloquea el paso 1
   video:!!saved.video
 };
-const save=()=>store.set("ce_v2",{platform:S.platform,nombre:S.nombre,telefono:S.telefono,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
+const save=()=>store.set("ce_v2",{meta:S.meta,platform:S.platform,nombre:S.nombre,telefono:S.telefono,datosOk:S.datosOk,st:S.st,whatsapp:S.whatsapp,video:S.video});
 
 // Confeti en canvas, sin librerías. fuerza: 1 = acción normal, 2 = logro grande.
 const confeti=(()=>{
@@ -263,10 +266,11 @@ function registrar(){
   if(!S.telefono)return;
   const marcas=seguidas();
   fetch("/api/registro",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,
-    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,siguio:marcas===3,marcas,grupo:S.whatsapp})}).catch(()=>{});
+    body:JSON.stringify({nombre:S.nombre,telefono:S.telefono,plataforma:S.platform,siguio:marcas===3,marcas,grupo:S.whatsapp,origen:S.meta?"meta":"landing"})}).catch(()=>{});
 }
-// Boletos que gana en la landing: 1 por registrarse, 1 por cada marca y 1 por el grupo (máximo 5).
-const boletos=()=>(S.datosOk?1:0)+seguidas()+(S.whatsapp?1:0);
+// Boletos que gana en la landing: 1 por registrarse (ya ganado si viene del formulario de Meta),
+// 1 por cada marca y 1 por el grupo (máximo 5).
+const boletos=()=>(S.datosOk||S.meta?1:0)+seguidas()+(S.whatsapp?1:0);
 let boletosAntes=null;
 const $=id=>document.getElementById(id);
 function track(n,p){try{if(window.fbq)fbq("trackCustom",n,p||{})}catch(e){}}
@@ -302,7 +306,12 @@ function render(){
   $("paso2").className="card "+(!p2?"locked":n===3?"complete":"active");
   $("paso3").className="card "+(!p3?"locked":S.whatsapp?"complete":"active");
   $("paso2").setAttribute("aria-disabled",String(!p2));$("paso3").setAttribute("aria-disabled",String(!p3));
-  $("continuar").textContent=p2?"Guardar cambios":"¡Quiero mi boleto! 🎟️";
+  $("continuar").textContent=p2?"Guardar cambios":S.meta?"Sumar mis boletos 🎟️":"¡Quiero mi boleto! 🎟️";
+  $("l-nombre").hidden=S.meta;$("p1-nota").hidden=S.meta;$("p1-meta").hidden=!S.meta;
+  if(S.meta){
+    $("p1-titulo").innerHTML="<small>Paso 1 · ✓ 1 boleto ya ganado</small>Confirma tu WhatsApp";
+    $("lead").innerHTML="¡Ya tienes tu <b>primer boleto</b> por el formulario! Junta <b>4 más</b> aquí en un minuto. Sorteo en vivo el <b>2 de noviembre, 5:00 pm</b>.";
+  }
   $("cambiar-plat").textContent=S.platform==="instagram"?"¿Usas Facebook en vez de Instagram? Cambiar":"¿Usas Instagram en vez de Facebook? Cambiar";
   // Boletera: llena una ranura por boleto y celebra cuando sube.
   const nb=boletos();
@@ -326,7 +335,7 @@ $("cambiar-plat").addEventListener("click",()=>{S.platform=S.platform==="instagr
 $("continuar").addEventListener("click",()=>{
   const nombre=$("nombre").value.trim(),telefono=$("telefono").value.replace(/\D/g,"").slice(-10);
   ["nombre","telefono"].forEach(id=>$(id).removeAttribute("aria-invalid"));
-  if(nombre.length<3){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
+  if(nombre.length<3&&!S.meta){$("nombre").focus();$("nombre").setAttribute("aria-invalid","true");return}
   if(telefono.length!==10){$("telefono").focus();$("telefono").setAttribute("aria-invalid","true");return}
   S.nombre=nombre;S.telefono=telefono;S.datosOk=true;save();render();
   registrar();paso("registro");
@@ -336,7 +345,7 @@ $("continuar").addEventListener("click",()=>{
 document.addEventListener("click",e=>{
   const open=e.target.closest("[data-open]");
   if(open){
-    if(!S.datosOk){e.preventDefault();$("nombre").focus();return}
+    if(!S.datosOk){e.preventDefault();$(S.meta?"telefono":"nombre").focus();return}
     // Con tocar Seguir ya cuenta: se abre el perfil y la marca queda lista, sin pedir confirmación.
     const id=open.dataset.open,fila=open.closest(".follow");
     if(MOVIL){e.preventDefault();abrirPerfil(id)}
@@ -374,8 +383,10 @@ function alReproducir(){
 $("play").addEventListener("click",()=>{const p=video.play();if(p&&p.catch)p.catch(()=>alReproducir())});
 video.addEventListener("play",alReproducir);
 $("nombre").value=S.nombre;$("telefono").value=S.telefono;
+if(S.meta)save();
 render();
 paso("visita");
+if(S.meta)paso("meta");
 // "empieza": al tocar o escribir en el formulario (el servidor lo cuenta una sola vez por celular).
 let empezo=false;
 ["nombre","telefono"].forEach(id=>["focus","pointerdown","input"].forEach(ev=>$(id).addEventListener(ev,()=>{if(!empezo){empezo=true;paso("empieza")}})));
